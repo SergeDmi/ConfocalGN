@@ -21,15 +21,18 @@ end
             
                 
 %% Initialization
-img=zeros(Npts,Npts,Npts);
+sN=size(Npts);
+if sN(2)==1;
+    Npts=[Npts(1) Npts(1) Npts(1)];
+end
+img=zeros(Npts);
 s=size(RR);
 if s(1)==3
     RR=RR';
 end
 
-
-
-%% We take the points in the image the closest to points in RR
+%% We select the points in the ground truth image the closest to the BBseam curve
+% These points will have a 
 A=unique(round(RR),'rows');
 sA=size(A,1);
 sig=fd*box_muller(sA);
@@ -37,6 +40,8 @@ for t=1:sA
     img(A(t,1),A(t,2),A(t,3))=max(0,fm+sig(t));
 end
 %% Adding the background
-img(:)=img(:)+(bm+bd*box_muller(Npts^3));
+% mean intensity bm and deviation bd
+img(:)=img(:)+(bm+bd*box_muller(Npts(1)*Npts(2)*Npts(3)));
 pts=A';
+
 end
