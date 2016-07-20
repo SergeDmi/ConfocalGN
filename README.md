@@ -13,15 +13,14 @@ The user may add
 To operate ConfocalGN, firt run startup.m 
 To use the confocal generator, the user must provide :
 - A ground truth image IMG (a 3D matrix)
+- Microscope properties CONF, containing 
+	-- CONF.pix : voxel size (in units of the pixel size of IMG), a 3x1 vector
+	-- CONF.psf : point spread funciton (in units of the pixel size of IMG), a 3x1 vector ; the psf is assumed gaussian, with a deviation CONF.psf.
 - A noise distribution NOISE and a signal value SIG 
 
 OR
 
 - A sample image (array or image name) SAMPLE for the program to derive NOISE and SIG
-- Microscope properties CONF, containing 
-	CONF.pix : voxel size (in units of the pixel size of IMG), a 3x1 vector
-	CONF.psf : point spread funciton (in units of the pixel size of IMG), a 3x1 vector
-				the psf is assumed gaussian, with a deviation CONF.psf
 
 Additionally, the user can specify
 - Sampling and segmentation options by edition the file confocal_options.m
