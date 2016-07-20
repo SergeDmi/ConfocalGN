@@ -8,7 +8,7 @@
 %% CONFOCAL GN Parameters
 % Properties of the microscope
 %conf.psf=[8 8 32];
-conf.psf=[5 5 20];
+conf.psf=[8 8 32];
 conf.pix=[6 6 24];
 
 
