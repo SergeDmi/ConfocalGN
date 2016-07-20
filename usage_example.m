@@ -29,7 +29,7 @@ R=60;
 % Resolution 
 dt=0.001;
 % Size of the ground truth in discretized units
-Npts=[500 500 300];
+Npts=[300 300 300];
 %% Generating a set of points ; here, a BBseam curve
 RR=generate_bbseam(Npts,b,R,dt,angs);
 %% Generating an image from these points
