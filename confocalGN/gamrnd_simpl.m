@@ -43,7 +43,8 @@ if (nargin < 3)
         end
     end
 end
-rnd= b*octave_randg(a,n);
+
+rnd= b*parrallel_randg(a,n);
 
 end
 

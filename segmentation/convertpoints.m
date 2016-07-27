@@ -5,6 +5,9 @@ function [ Pts,W ] = convertpoints( img , pixsizes,offset)
 % Serge Dmitrieff, EMBL, 2015
 if nargin<3
     offset=[0 0 0];
+    if nargin<2
+        pixsizes=[1 1 1];
+    end
 end
 s=size(img);
 l=length(pixsizes);

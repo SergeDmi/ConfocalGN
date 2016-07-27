@@ -1,4 +1,4 @@
-function [ mean_sig,noise,img,stack,mask] = get_img_params(image,options)
+function [ sig,noise,img,stack,mask] = get_img_params(image,options)
 % Finds mean pixel value of signal, and background distribution in image
 %   For this we segment the image (gaussian filter+thresholding)
 %   image can be a filename (then loaded with tiffread)
@@ -79,10 +79,10 @@ end
 % Background value in original image
 bkg=stack(mask);
 % Signal value in original image
-sig=stack(~mask);
+frt=stack(~mask);
 % Observables
 noise=moments(bkg);
-mean_sig=mean(sig);
+sig=moments(frt);
 
 end
 

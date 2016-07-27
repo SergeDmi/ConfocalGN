@@ -1,6 +1,6 @@
 function [ M ] = moments( X,n )
 % moments returns the n first moments of distribution X
-%  default : n=3
+%   default : n=3
 if nargin <2
     n=3;
 end

@@ -1,4 +1,4 @@
-function [ stack,offset,SIG,NOISE,img] = stack_generator( img,conf,noise,mean_sig,options)
+function [ stack,offset,SIG,NOISE,img] = stack_generator( img,conf,sig,noise,options)
 % stac_generator : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -22,7 +22,8 @@ function [ stack,offset,SIG,NOISE,img] = stack_generator( img,conf,noise,mean_si
 %   it is modeled by gamma function
 %   Otherwise, the noise is gaussian
 %
-% * mean_sig is the aim for the ground truth mean pixel value
+% * sig is the moments of the signal distribution
+%       sig(1) is the aim for the signal mean pixel value
 %
 % OUTPUT
 % * stack is the simulated confocal stack
@@ -49,8 +50,22 @@ if nargin<2
     error('You must provide an image and confocal imaging properties');
 end
 
-if nargin<3
+
+
+if nargin>2
+   if sig(1)<0
+        error('Invalid expected mean signal');
+   elseif sig(1)<noise(1);
+       warning('Signal expected lower than signal');
+   end
+else 
+    error('No signal level specified');
+end
+
+
+if nargin<4
     noise=[0 0 0];
+    warning('No noise');
 else
     if length(noise)<2
         error('Invalid noise properties (not enough moments)');
@@ -61,15 +76,6 @@ else
     end
 end
 
-objective=0;
-if nargin>3
-    objective=1;
-   if mean_sig<0
-        error('Invalid expected mean signal');
-   elseif mean_sig<noise(1);
-       warning('Signal expected lower than signal');
-   end
-end
 defopt=load_options();
 if nargin<5
     options=defopt;
@@ -78,19 +84,8 @@ if isfield(options,'segmentation')
    options=options.segmentation;
 end
 
-%% Signal multiplication to reach objective
-if objective>0
-    % Estimating signal before noise addition
-    stack=generate_stacks(img,conf);
-    msv=get_img_params(stack,options);
-    % Estimating signal multiplication required
-    mult_sig=(mean_sig-noise(1))/msv;
-else
-    mult_sig=1.0;
-end
-
 %% Stack generation
-[ stack,offset] = generate_stacks( img,conf,noise,mult_sig);
+[ stack,offset] = generate_stacks( img,conf,sig,noise);
 [SIG,NOISE,img]=get_img_params(stack,options);
 end
 

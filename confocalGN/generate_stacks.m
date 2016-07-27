@@ -1,4 +1,4 @@
-function [ stack,offset] = generate_stacks( img,conf,noise,mult_sig)
+function [ stack,offset] = generate_stacks( img,conf,sig,noise)
 % generate_stacks : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -22,7 +22,8 @@ function [ stack,offset] = generate_stacks( img,conf,noise,mult_sig)
 %   it is modeled by gamma function
 %   Otherwise, the noise is gaussian
 %
-% * mult_sig is the multiplicator for ground truth
+% * sig is the moments of the signal distribution
+%       sig(1) is the aim for the signal mean pixel value
 %
 % OUTPUT
 % * stack is the simulated confocal stack
@@ -50,16 +51,21 @@ if nargin<2
 end
 psf=conf.psf;
 pix=conf.pix;
-    
-if nargin<4
-    mult_sig=1.0;
-else
-   if mult_sig<0
-        error('Invalid signal properties');
+
+if nargin>2
+   if sig(1)<0
+        error('Invalid expected mean signal');
+   elseif sig(1)<noise(1);
+       warning('Signal expected lower than signal');
    end
+else 
+    error('No signal level specified');
 end
-if nargin<3
+
+
+if nargin<4
     noise=[0 0 0];
+    warning('No noise');
 else
     if length(noise)<2
         error('Invalid noise properties (not enough moments)');
@@ -69,7 +75,7 @@ else
         end
     end
 end
-img=img*mult_sig;
+
 
 %% 3D Convoluting of the image
 if sum(psf>0)
@@ -86,6 +92,18 @@ dj=ceil(pix(2)/2.0);
 dk=ceil(pix(3)/2.0);
 offset=[di dj dk];
 stack=img(di+(0:(nn(1)-1))*pix(1),dj+(0:(nn(2)-1))*pix(2),dk+(0:(nn(3)-1))*pix(3));
+
+%% Estimating signal & noise levels to calibrate noise
+[ Ssig,Snoise] = get_img_params(stack);
+f=Ssig(1);
+b=Snoise(1);
+% Desired signal to noise 
+s=sig(1)/noise(1);
+B=(f-s*b)/(s-1);
+A=1/(b+B);
+% Linear algebra on stack to reach desired signal and noise level
+stack=A*(stack+B);
+
 %% Adding noise
 if noise(3)==0
     % if no skew, gaussian noise
@@ -100,6 +118,6 @@ else
         px_noise=px_off+gamrnd_simpl(k,theta,nn(1)*nn(2)*nn(3));
     end
 end
-stack(:)=stack(:)+px_noise(:);
+stack(:)=stack(:).*px_noise(:);
 end
 
