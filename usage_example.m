@@ -6,8 +6,39 @@
 
 %% CONFOCAL GN Parameters
 % Properties of the microscope
+<<<<<<< HEAD
 conf.psf=[13 13 22];
 conf.pix=[8 8 32];
+=======
+%conf.psf=[8 8 32];
+conf.psf=[8 8 32];
+conf.pix=[6 6 24];
+
+
+%% PARAMETER for ground truth generation
+% Properties of the fluorophores
+%   gaussian fluorescence is assumed for all points in the original signal
+%   This is VERY tough to estimate theoretically as it depends on the
+%   number of fluorophores, exposure time, etc.
+fluo=[5 5];
+% Background fluorescence
+bkgd=[0 0 0];
+% Degree of coiling of the base ball seam curve
+b=0.00;
+% Orientation of the BBseam curve
+angs=[pi/12 -pi/12 0];
+% Radius of the sphere containing BB seam curve
+R=60;
+% Resolution 
+dt=0.001;
+% Size of the ground truth in discretized units
+Npts=[300 300 300];
+%% Generating a set of points ; here, a BBseam curve
+RR=generate_bbseam(Npts,b,R,dt,angs);
+%% Generating an image from these points
+% Image includes fluorophore stochasticity and background fluorescence
+[img,pts]=generate_pts_img(Npts,RR,fluo,bkgd);
+>>>>>>> 19388cf65ce9adf535eb387eb118dc62b993c194
 
 %% Ground truth generation
 % Img is the hi-res 3D image containing the ground truth
@@ -44,6 +75,10 @@ if 1
     figure
     hold all
     scatter3(pts(1,:)/pix(1),pts(2,:)/pix(1),pts(3,:)/pix(1),'k.')
+<<<<<<< HEAD
     scatter3(Pts(1,:)/pix(1),Pts(2,:)/pix(1),Pts(3,:)/pix(1),'b')
     axis equal
 end
+=======
+end
+>>>>>>> 19388cf65ce9adf535eb387eb118dc62b993c194
