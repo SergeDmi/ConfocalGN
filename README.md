@@ -12,7 +12,7 @@ The user may add
 # Operation
 To operate ConfocalGN, firt run startup.m 
 To use the confocal generator, the user must provide :
-- A ground truth image IMG (a 3D matrix)
+- A ground truth image IMG (a 3D matrix or a tiff filename)
 - Microscope properties CONF, containing 
 	-- CONF.pix : voxel size (in units of the pixel size of IMG), a 3x1 vector
 	-- CONF.psf : point spread funciton (in units of the pixel size of IMG), a 3x1 vector ; the psf is assumed gaussian, with a deviation CONF.psf.
