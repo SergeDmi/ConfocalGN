@@ -6,6 +6,7 @@ function [ stacks,offset,achieved_sig,achieved_noise,im,sig,noise] = confocal_ge
 % * img is the orginal ground truth, with isotropic 1x1x1 pixels
 %   this image shall be convolved with the psf
 %   should already have background noise included if any
+%   is either a matrix or a tiff file
 %
 % * conf.psf is the point spread function of the microscope 
 %       it is the 2-way psf (i.e. illumination+observation)

@@ -6,6 +6,7 @@ function [ stack,offset] = generate_stacks( img,conf,sig,noise)
 % * img is the orginal ground truth, with isotropic 1x1x1 pixels
 %   this image shall be convolved with the psf
 %   should already have background noise included if any
+%   is either a matrix or a tiff file
 %
 % * conf.psf is the point spread function of the microscope 
 %       it is the 2-way psf (i.e. illumination+observation)
@@ -52,6 +53,18 @@ end
 psf=conf.psf;
 pix=conf.pix;
 
+% If img is the name of a tiff file, importing it as an array
+if ischar(img)
+    imgs=tiffread(img);
+    n=length(imgs);
+    s=size(imgs(1).data);
+    s(3)=n;
+    img=zeros(s);
+    for i=1:n
+        img(:,:,i)=imgs(i).data;
+    end
+end
+
 if nargin>2
    if sig(1)<0
         error('Invalid expected mean signal');
@@ -75,6 +88,8 @@ else
         end
     end
 end
+
+
 
 
 %% 3D Convoluting of the image
