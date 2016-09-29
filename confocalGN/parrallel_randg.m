@@ -25,6 +25,8 @@ function [ r ] = parrallel_randg( a , n )
 %
 % Modified and simplified for Matlab. 
 % Implementation of Matlab parrallelization by Serge Dmitrieff, 2016
+% This is the fastest matlab gamma distribution generator I found x_x
+% Please let me know if you have better !
 % 
 % www.biophysics.fr
 
