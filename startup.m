@@ -1,5 +1,4 @@
-%%---------------startup file S. Dmitrieff 2016
+%%--------------- Startup for confocal GN
 addpath('tiffread/')
 addpath('confocalGN/')
 addpath('segmentation/')
-addpath('bbseam/')
