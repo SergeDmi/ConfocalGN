@@ -1,15 +1,22 @@
 % Example of mock confocal data generation
 %   We first generate a baseball seam curve
-%   We then make it confocale
+%   We then make it confocal
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015
+% http://biophysics.fr
+
+%% Ground truth 
+% Ground truth can be an image file or a stack
+% Must be high resolution
+img='ground_truth.tiff';
 
 %% CONFOCAL GN Parameters
-% Properties of the microscope
-conf.psf=[13 13 22];
+% pix : number of pixels of the ground truth in a confocal voxel
+% ground truth is high res compared to confocal
 conf.pix=[8 8 32];
+% Psf : Property of the microscope
+% Size pf the psf in the 3 dimensions in units of ground truth pixel size
+conf.psf=[13 13 22];
 
-%% Ground truth generation
-% Img is the hi-res 3D image containing the ground truth
-[img,~]=make_ground_truth();
 
 %% Reading Noise and Signal parameters from image
 if 1
@@ -27,21 +34,23 @@ else
     [stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(img,conf,noise,mean_sig);
 end
 
-
-
 %% Graphical output : Image segmentation & plotting to compare simulated data to original
 if 1
     pix=conf.pix;
     % We then convert from stack to pixel coordinatees Pts and intensities W
-    [ Pts,W ] = convertpoints( im , conf.pix );
-    % Conveerting ground truth image to points
+    % (because of smaller scale, there is an offset between the stack and
+    % the ground truth) 
+    [ Pts,W ] = convertpoints( im , conf.pix,offset);
+    % Converting ground truth image to points
     [ ~,~,img2] = get_img_params(img);
     pts = convertpoints( img2 );
+    % We convert the coordinates to voxel units
+    Pts(:)=Pts(:)/pix(1);
+    pts(:)=pts(:)/pix(1);
     % Plotting
     figure
     hold all
-    scatter3(pts(1,:)/pix(1),pts(2,:)/pix(1),pts(3,:)/pix(1),'k.')
-
-    scatter3(Pts(1,:)/pix(1),Pts(2,:)/pix(1),Pts(3,:)/pix(1),'b')
+    scatter3(pts(1,:),pts(2,:),pts(3,:),'k.')
+    scatter3(Pts(1,:),Pts(2,:),Pts(3,:),'b')
     axis equal
 end
