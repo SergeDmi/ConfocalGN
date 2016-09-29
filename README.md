@@ -17,9 +17,7 @@ To use the confocal generator, the user must provide :
 	-- CONF.pix : voxel size (in units of the pixel size of IMG), a 3x1 vector
 	-- CONF.psf : point spread funciton (in units of the pixel size of IMG), a 3x1 vector ; the psf is assumed gaussian, with a deviation CONF.psf.
 - A noise distribution NOISE and a signal value SIG 
-
 OR
-
 - A sample image (array or image name) SAMPLE for the program to derive NOISE and SIG
 
 Additionally, the user can specify
@@ -29,38 +27,37 @@ Additionally, the user can specify
 The user can then call the function
 
 	[stacks,offset,acheived_sig,achieved_noise,im]=confocal_generator(IMG,CONF,SAMPLE);
-	
 or 
-
 	[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(IMG,CONF,NOISE,SIG);
 	
 Where "stacks" is the simulated image, "offset" is the translation needed to align with IMG,
 "achieved_sig" is the mean signal value in the experiment, im is the post-segmentation image of stack.
 
 # Typical usage :
-To operate ConfocalGN, firt run startup.m 
-For typical usage, see usage_example.m 
-- IMG is a 300x300x300 cubic matrix
-- CONF.psf=[8 8 32];
-- CONF.pix=[6 6 24];
-- SAMPLE is an image name 'sample_image.tiff' 
-- Options is confocal_default_options.m
+To see an operational example of ConfocalGN, first run startup.m 
+Then run usage_example.m
 
 # Credits & Licence
 Code is distributed under GPL3.0 Licence (see LICENCE.md)
 This code includes the librairies :
 - tiffread Copyright (C) 1999-2010 Francois Nedelec
+- gausss3filter Copyright (C) Max W.K. Law
 - Octave code (Copyright (C) 2006-2015 John W. Eaton), under GPL licence
-	
+
+
 Code modified from Octave's : 
 - randg
 - gamrnd
 see tiffread.m ; octave_randg.m ; gamrnd_simpl.m for licencing information.
 
-This code was developped by Serge Dmitrieff in 2016 in EMBL.
+This code was developped by Serge Dmitrieff in 2016 in EMBL, with the support of François Nédélec.
 http://biophysics.fr
 
 # Changelog
 -June 2016 : initial minimal version
 -July 2016 : correction of stacking
 -July 2016 : major overhaul for easier use, and usage of sample image
+
+# Source for gauss3filter 
+Max W. K. Law and Albert C. S. Chung, "Efficient Implementation for Spherical Flux Computation and Its Application to Vascular Segmentation",
+IEEE Transactions on Image Processing, 2009, Volume 18(3), 596�V612
