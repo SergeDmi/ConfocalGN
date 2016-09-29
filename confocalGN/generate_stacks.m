@@ -56,13 +56,7 @@ pix=conf.pix;
 % If img is the name of a tiff file, importing it as an array
 if ischar(img)
     imgs=tiffread(img);
-    n=length(imgs);
-    s=size(imgs(1).data);
-    s(3)=n;
-    img=zeros(s);
-    for i=1:n
-        img(:,:,i)=imgs(i).data;
-    end
+    img=get_stack(imgs);
 end
 
 if nargin>2
@@ -105,7 +99,7 @@ nn=floor(s./pix);
 di=ceil(pix(1)/2.0);
 dj=ceil(pix(2)/2.0);
 dk=ceil(pix(3)/2.0);
-offset=[di dj dk];
+offset=-[di dj dk];
 stack=img(di+(0:(nn(1)-1))*pix(1),dj+(0:(nn(2)-1))*pix(2),dk+(0:(nn(3)-1))*pix(3));
 
 %% Estimating signal & noise levels to calibrate noise
@@ -114,9 +108,9 @@ f=Ssig(1);
 b=Snoise(1);
 % Desired signal to noise 
 s=sig(1)/noise(1);
+% Linear algebra on stack to reach desired signal and noise level
 B=(f-s*b)/(s-1);
 A=1/(b+B);
-% Linear algebra on stack to reach desired signal and noise level
 stack=A*(stack+B);
 
 %% Adding noise

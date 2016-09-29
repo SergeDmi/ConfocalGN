@@ -43,14 +43,7 @@ if ischar(image)
     else
         imgs=tiffread(image);
     end
-    n=length(imgs);
-    s=size(imgs(1).data);
-    s(3)=n;
-
-    stack=zeros(s);
-    for i=1:n
-        stack(:,:,i)=imgs(i).data;
-    end
+    stack=get_stack(imgs);
 else
     if ~isempty(image) 
         if ~isempty(ix)
