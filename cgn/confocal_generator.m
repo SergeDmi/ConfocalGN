@@ -47,7 +47,7 @@ function [ stacks,offset,achieved_sig,achieved_noise,im,sig,noise] = confocal_ge
 if nargin<3
     error('You must provide a ground truth, confocal properties, and a sample image, ');
 end
-defopt=load_options();
+defopt=cgn_options_load();
 if nargin<4
     options=defopt;
 end

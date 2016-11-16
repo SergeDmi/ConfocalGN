@@ -16,10 +16,10 @@ function [ sig,noise,img,stack,mask] = get_img_params(image,options)
 % stack is the analyzed image (raw data)
 % mask are the background pixels 
 %
-% Serge Dmitrieff, Nédélec Lab, EMBL 2016
+% Serge Dmitrieff, N??d??lec Lab, EMBL 2016
 % www.biophysics.fr
 
-defopt=load_options();
+defopt=cgn_options_load();
 if nargin<2
     options=defopt;
 end

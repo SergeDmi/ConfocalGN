@@ -44,7 +44,7 @@ function [ stack,offset,SIG,NOISE,img] = stack_generator( img,conf,sig,noise,opt
 % This program is intended solely for analysis testing purpose.
 % This IS not a rigorous implementation of confocal optics and electronics.
 %
-% Serge Dmitrieff, Nédélec Lab, EMBL 2016
+% Serge Dmitrieff, N??d??lec Lab, EMBL 2016
 % www.biophysics.fr
 
 if nargin<2
@@ -77,7 +77,7 @@ else
     end
 end
 
-defopt=load_options();
+defopt=cgn_options_load();
 if nargin<5
     options=defopt;
 end
