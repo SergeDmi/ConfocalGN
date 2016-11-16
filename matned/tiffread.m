@@ -1,6 +1,6 @@
 function stack = tiffread(file_name, indices, varargin)
 
-% tiffread, version 3.21 - December 18, 2012
+% tiffread, version 3.31 - September 20, 2014
 %
 % stack = tiffread;
 % stack = tiffread(filename);
@@ -60,7 +60,7 @@ function stack = tiffread(file_name, indices, varargin)
 %
 % ------------------------------------------------------------------------------
 %
-% Copyright (C) 1999-2010 Francois Nedelec, 
+% Copyright (C) 1999-2014 Francois Nedelec, 
 % with contributions from:
 %   Kendra Burbank for the waitbar
 %   Hidenao Iwai for the code to read floating point images,
@@ -71,7 +71,9 @@ function stack = tiffread(file_name, indices, varargin)
 %   Urs Utzinger for the better handling of color images, and LSM meta-data
 %   O. Scott Sands for support of GeoTIFF tags
 %   Benjamin Bratton for Andor tags and more
+%   Linqing Feng for fixing a bug reading TIF.PlanarConfiguration == 2
 %   
+%
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation, version 3 of the License.
@@ -124,8 +126,9 @@ opt = parser.Results;
 % the structure ANDOR has additional header information which is added to
 % each plane of the image eventually
 
-TIF = struct('BOS', 'ieee-le');          %byte order string
+TIF = struct('ByteOrder', 'ieee-le');          %byte order string
 TIF.SamplesPerPixel = 1;
+TIF.PlanarConfiguration = 1;
 
 % obtain the full file path:
 [status, file_attrib] = fileattrib(file_name);
@@ -146,11 +149,11 @@ image_name = [name, ext];
 
 %% ---- read byte order: II = little endian, MM = big endian
 
-byte_order = fread(TIF.file, 2, '*char');
-if ( strcmp(byte_order', 'II') )
-    TIF.BOS = 'ieee-le';    % Intel little-endian format
-elseif ( strcmp(byte_order','MM') )
-    TIF.BOS = 'ieee-be';
+bos = fread(TIF.file, 2, '*char');
+if ( strcmp(bos', 'II') )
+    TIF.ByteOrder = 'ieee-le';    % Intel little-endian format
+elseif ( strcmp(bos','MM') )
+    TIF.ByteOrder = 'ieee-be';
 else
     error('This is not a TIFF file (no MM or II).');
 end
@@ -158,7 +161,7 @@ end
 
 %% ---- read in a number which identifies TIFF format
 
-tiff_id = fread(TIF.file,1,'uint16', TIF.BOS);
+tiff_id = fread(TIF.file,1,'uint16', TIF.ByteOrder);
 
 if (tiff_id ~= 42)
     error('This is not a TIFF file (missing 42).');
@@ -166,9 +169,8 @@ end
 
 %% ---- read the image file directories (IFDs)
 
-ifd_pos   = fread(TIF.file, 1, 'uint32', TIF.BOS);
+ifd_pos   = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
 stack     = [];
-hWaitbar  = [];
 img_indx  = 0;
 
 
@@ -185,7 +187,7 @@ while  ifd_pos ~= 0
     file_seek(ifd_pos);
 
     %read in the number of IFD entries
-    num_entries = fread(TIF.file,1,'uint16', TIF.BOS);
+    num_entries = fread(TIF.file,1,'uint16', TIF.ByteOrder);
     %fprintf('num_entries = %i\n', num_entries);
 
     % store current position:
@@ -193,7 +195,7 @@ while  ifd_pos ~= 0
     
     % read the next IFD address:
     file_seek(ifd_pos+12*num_entries+2);
-    ifd_pos = fread(TIF.file, 1, 'uint32', TIF.BOS);
+    ifd_pos = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
  
     % we want to read the first IFD, but not any other one,
     % unless demanded in the indices:
@@ -216,7 +218,7 @@ while  ifd_pos ~= 0
         file_seek(entry_pos+12*(inx-1));
 
         % read entry tag
-        entry_tag = fread(TIF.file, 1, 'uint16', TIF.BOS);
+        entry_tag = fread(TIF.file, 1, 'uint16', TIF.ByteOrder);
         % read entry
         entry = readIFDentry(entry_tag);
         
@@ -247,7 +249,8 @@ while  ifd_pos ~= 0
             case 262         % photometric interpretation
                 TIF.PhotometricInterpretation = entry.val;
                 if ( TIF.PhotometricInterpretation == 3 )
-                    warning('tiffread:LookUp', 'Ignoring TIFF look-up table');
+                    %warning('tiffread:LookUp', 'Ignoring TIFF look-up table');
+                    fprintf(2, 'Ignoring TIFF look-up table in %s\n', image_name);
                 end
             case 269
                 IMG.document_name = entry.val;
@@ -412,70 +415,34 @@ while  ifd_pos ~= 0
         continue;
     end
 
-    % Planar configuration is not fully supported
-    
-    %Per tiff spec 6.0 PlanarConfiguration irrelevent if SamplesPerPixel==1
-    %Contributed by Stephen Lang
-    if (TIF.SamplesPerPixel ~= 1) && ( ~isfield(TIF, 'PlanarConfiguration') || TIF.PlanarConfiguration == 1 )
-        error('PlanarConfiguration = 1 is not supported');
-    end
-
     %total number of bytes per image:
-    PlaneBytesCnt = IMG.width * IMG.height * TIF.BytesPerSample;
-
+    if TIF.PlanarConfiguration == 1
+        BytesPerPlane = TIF.SamplesPerPixel * IMG.width * IMG.height * TIF.BytesPerSample;
+    else
+        BytesPerPlane = IMG.width * IMG.height * TIF.BytesPerSample;
+    end
+    
     % try to consolidate the TIFF strips if possible
     
-    if opt.ConsolidateStrips
-        %Try to consolidate the strips into a single one to speed-up reading:
-        BytesCnt = TIF.StripByteCounts(1);
-
-        if BytesCnt < PlaneBytesCnt
-
-            ConsolidateCnt = 1;
-            %Count how many Strip are needed to produce a plane
-            while TIF.StripOffsets(1) + BytesCnt == TIF.StripOffsets(ConsolidateCnt+1)
-                ConsolidateCnt = ConsolidateCnt + 1;
-                BytesCnt = BytesCnt + TIF.StripByteCounts(ConsolidateCnt);
-                if ( BytesCnt >= PlaneBytesCnt ); break; end
-            end
-
-            %Consolidate the Strips
-            if ( BytesCnt <= PlaneBytesCnt(1) ) && ( ConsolidateCnt > 1 )
-                %fprintf('Consolidating %i stripes out of %i', ConsolidateCnt, TIF.StripNumber);
-                TIF.StripByteCounts = [BytesCnt; TIF.StripByteCounts(ConsolidateCnt+1:TIF.StripNumber ) ];
-                TIF.StripOffsets = TIF.StripOffsets( [1 , ConsolidateCnt+1:TIF.StripNumber] );
-                TIF.StripNumber  = 1 + TIF.StripNumber - ConsolidateCnt;
-            end
-        end
+    if opt.ConsolidateStrips        
+        consolidate_strips(BytesPerPlane);
     end
 
     
     % Read pixel data
     
     if isfield(TIF, 'MM_stack')
+
         sel = ( indices <= TIF.MM_stackCnt );
         indices = indices(sel);
         
-        if length(indices) > 1
-            hWaitbar = waitbar(0,'Reading images...','Name','TiffRead');
-        end
-
         %this loop reads metamorph stacks:
         for ii = indices
             
             TIF.StripCnt = 1;
-            offset = PlaneBytesCnt * (ii-1);
 
-            %read the image channels
-            for c = 1:TIF.SamplesPerPixel
-                IMG.data{c} = read_plane(offset, IMG.width, IMG.height, c);
-            end
-
-            % print a text timer on the main window, or update the waitbar
-            % fprintf('img_read %i img_skip %i\n', img_read, img_skip);
-            if ~isempty( hWaitbar )
-                waitbar(length(stack)/length(indices), hWaitbar);
-            end
+            %read the image data
+            IMG.data = read_pixels(BytesPerPlane * (ii-1));
             
             [ IMG.MM_stack, IMG.MM_wavelength, IMG.MM_private2 ] = splitMetamorph(ii);
             
@@ -483,16 +450,12 @@ while  ifd_pos ~= 0
             stack = cat(2, stack, IMG);
  
         end
-        
-        if ~isempty( hWaitbar )
-            delete( hWaitbar );
-        end
-
+ 
         break;
 
     else
       
-        if opt.SimilarImages && length(stack) > 0
+        if opt.SimilarImages && ~isempty(stack)
             if IMG.width ~= stack(1).width || IMG.height ~= stack(1).height
                 % setting read_img=0 will skip dissimilar images:
                 % comment-out the line below to allow dissimilar stacks
@@ -503,11 +466,8 @@ while  ifd_pos ~= 0
         
         TIF.StripCnt = 1;
         
-        % read each image channel
-        for c = 1:TIF.SamplesPerPixel
-            %disp(['Width : ' num2str(IMG.width) ])
-            IMG.data{c} = read_plane(0, IMG.width, IMG.height, c);
-        end
+        %read image data
+        IMG.data = read_pixels(zeros(size(BytesPerPlane)));
         
         try
             stack = cat(2, stack, IMG);
@@ -534,16 +494,16 @@ TIF.file = -1;
 % remove the cell structure if there is always only one channel
 
 flat = 1;
-for i = 1:length(stack)
-    if length(stack(i).data) ~= 1
+for ii = 1:length(stack)
+    if length(stack(ii).data) ~= 1
         flat = 0;
         break;
     end
 end
 
 if flat
-    for i = 1:length(stack)
-        stack(i).data = stack(i).data{1};
+    for ii = 1:length(stack)
+        stack(ii).data = stack(ii).data{1};
     end
 end
 
@@ -553,11 +513,11 @@ end
 if opt.DistributeMetaData  &&  exist('ANDOR', 'var')
 
     fieldNames = fieldnames(ANDOR);
-    for i = 1:length(stack)
-        for j = 1:size(fieldNames,1)
-            stack(i).(fieldNames{j})=ANDOR.(fieldNames{j});
+    for ii = 1:length(stack)
+        for jj = 1:size(fieldNames,1)
+            stack(ii).(fieldNames{jj})=ANDOR.(fieldNames{jj});
         end
-        stack(i).planeNumber = i;
+        stack(ii).planeNumber = ii;
     end
     % set nFrames if it doesn't exist
     if ~ isfield(stack,'nFrames')
@@ -576,39 +536,80 @@ if opt.DistributeMetaData
         IMG.info = regexprep(IMG.info, '\r\n|\0', '\n');
         lines = textscan(IMG.info, '%s', 'Delimiter', '\n');
         mmi = parseMetamorphInfo(lines{1}, TIF.MM_stackCnt);
-        for i = 1:length(stack)
-            stack(i).MM = mmi(stack(i).index);
+        for ii = 1:length(stack)
+            stack(ii).MM = mmi{stack(ii).index};
         end
         
     end
     
     % duplicate the LSM info
     if exist('LSM_info', 'var')
-        for i = 1:length(stack)
-            stack(i).lsm = LSM_info;
+        for ii = 1:length(stack)
+            stack(ii).lsm = LSM_info;
         end
     end
     
 end
 
-
+return
 
 %% Sub Function
 
-    function file_seek(pos)
-        status = fseek(TIF.file, pos, -1);
+    function file_seek(fpos)
+        status = fseek(TIF.file, fpos, -1);
         if status == -1
             error('Invalid file offset (invalid fseek)');
         end
     end
 
-%% ===========================================================================
 
-    function plane = read_plane(offset, width, height, plane_nb)
+    function consolidate_strips(BytesPerPlane)
+        %Try to consolidate the strips into a single one to speed-up reading:
+        nBytes = TIF.StripByteCounts(1);
+        
+        if nBytes < BytesPerPlane
+            
+            idx = 1;
+            % accumulate continguous strips that contribute to the plane
+            while TIF.StripOffsets(1) + nBytes == TIF.StripOffsets(idx+1)
+                idx = idx + 1;
+                nBytes = nBytes + TIF.StripByteCounts(idx);
+                if ( nBytes >= BytesPerPlane ); break; end
+            end
+            
+            %Consolidate the Strips
+            if ( nBytes <= BytesPerPlane(1) ) && ( idx > 1 )
+                %fprintf('Consolidating %i stripes out of %i', ConsolidateCnt, TIF.StripNumber);
+                TIF.StripByteCounts = [nBytes; TIF.StripByteCounts(idx+1:TIF.StripNumber ) ];
+                TIF.StripOffsets = TIF.StripOffsets( [1 , idx+1:TIF.StripNumber] );
+                TIF.StripNumber  = 1 + TIF.StripNumber - idx;
+            end
+        end
+    end
+
+
+    function pixels = read_pixels(offsets)
+        n_pix = IMG.width * IMG.height;
+        bytes = read_plane(offsets(1), 1, TIF.SamplesPerPixel*n_pix);
+        pixels = cell(TIF.SamplesPerPixel, 1);
+        if TIF.PlanarConfiguration == 2
+           for c = 1:TIF.SamplesPerPixel
+                pixels{c} = reshape(bytes((1+n_pix*(c-1)):(n_pix*c)), IMG.width, IMG.height)';
+           end
+        else
+            spp = TIF.SamplesPerPixel;
+            for c = 1:TIF.SamplesPerPixel
+                pixels{c} = reshape(bytes(c:spp:c+spp*n_pix-spp), IMG.width, IMG.height)';
+            end
+        end
+    end
+
+
+    function bytes = read_plane(offset, plane_nb, bytes_nb)
                 
         %return an empty array if the sample format has zero bits
         if ( TIF.BitsPerSample(plane_nb) == 0 )
-            plane=[];
+            bytes=[];
             return;
         end
         
@@ -635,61 +636,56 @@ end
                 error('unsuported TIFF sample format %i', SampleFormat);
         end
         
-        % Preallocate a matrix to hold the sample data:
+        % Preallocate memory:
         try
-            plane = zeros(width, height, classname);
+            bytes = zeros(bytes_nb, 1, classname);
         catch
             %compatibility with older matlab versions:
-            eval(['plane = ', classname, '(zeros(width, height));']);
+            eval(['plane = ', classname, '(zeros(bytes_nb, 1));']);
         end
         
-        % Read the strips and concatenate them:
-        line = 1;
-        while ( TIF.StripCnt <= TIF.StripNumber )
+        % consolidate all strips:
+        pos = 0;
+        while 1
             
-            strip = read_strip(offset, width, plane_nb, TIF.StripCnt, classname);
-            TIF.StripCnt = TIF.StripCnt + 1;
+            strip = read_next_strip(offset, plane_nb, classname);
             
-            % copy the strip onto the data
-            plane(:, line:(line+size(strip,2)-1)) = strip;
-            
-            line = line + size(strip,2);
-            if ( line > height )
-                break;
+            if isempty(strip)
+                break
             end
             
+            bytes(1+pos:pos+length(strip)) = strip;
+            pos = pos + length(strip);
+           
         end
-        
-        % Extract valid part of data if needed
-        if ~all(size(plane) == [width height]),
-            plane = plane(1:width, 1:height);
-            warning('tiffread:Crop','Cropping data: found more bytes than needed');
+
+        if pos < bytes_nb
+            warning('tiffread: %s','found fewer bytes than needed');
         end
-        
-        % transpose the image (otherwise display is rotated in matlab)
-        plane = plane';
-        
     end
 
 
-%% ================== sub-functions to read a strip ===================
-
-    function strip = read_strip(offset, width, plane_nb, stripCnt, classname)
+    function strip = read_next_strip(offset, plane_nb, classname)
         
-        %fprintf('reading strip at position %i\n',TIF.StripOffsets(stripCnt) + offset);
-        StripLength = TIF.StripByteCounts(stripCnt) ./ TIF.BytesPerSample(plane_nb);
+        if ( TIF.StripCnt > TIF.StripNumber )
+            strip = [];
+            return;
+        end
+            
+        %fprintf('reading strip at position %i\n',TIF.StripOffsets(TIF.StripCnt) + offset);
+        StripLength = TIF.StripByteCounts(TIF.StripCnt) ./ TIF.BytesPerSample(plane_nb);
         
-        %fprintf( 'reading strip %i\n', stripCnt);
-        file_seek(TIF.StripOffsets(stripCnt) + offset);
+        %fprintf( 'reading strip %i\n', TIF.StripCnt);
+        file_seek(TIF.StripOffsets(TIF.StripCnt) + offset);
         
-        bytes = fread( TIF.file, StripLength, classname, TIF.BOS );
+        strip = fread(TIF.file, StripLength, classname, TIF.ByteOrder);
         
-        if any( length(bytes) ~= StripLength )
+        if any( length(strip) ~= StripLength )
             error('End of file reached unexpectedly.');
         end
         
-        strip = reshape(bytes, width, StripLength / width);
-        
+        TIF.StripCnt = TIF.StripCnt + 1;
+
     end
 
 
@@ -731,30 +727,30 @@ end
 
     function  entry = readIFDentry(entry_tag)
         
-        entry.tiffType = fread(TIF.file, 1, 'uint16', TIF.BOS);
-        entry.cnt      = fread(TIF.file, 1, 'uint32', TIF.BOS);
+        entry.tiffType = fread(TIF.file, 1, 'uint16', TIF.ByteOrder);
+        entry.cnt      = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
         %disp(['tiffType =', num2str(entry.tiffType),', cnt = ',num2str(entry.cnt)]);
         
         [ entry.nbBytes, entry.matlabType ] = convertType(entry.tiffType);
         
         if entry.nbBytes * entry.cnt > 4
             %next field contains an offset:
-            offset = fread(TIF.file, 1, 'uint32', TIF.BOS);
+            fpos = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
             %disp(strcat('offset = ', num2str(offset)));
-            file_seek(offset);
+            file_seek(fpos);
         end
         
         
         if entry_tag == 33629   % metamorph stack plane specifications
-            entry.val = fread(TIF.file, 6*entry.cnt, entry.matlabType, TIF.BOS);
+            entry.val = fread(TIF.file, 6*entry.cnt, entry.matlabType, TIF.ByteOrder);
         elseif entry_tag == 34412  %TIF_CZ_LSMINFO
             entry.val = readLSMinfo;
         else
             if entry.tiffType == 5 % TIFF 'rational' type
-                val = fread(TIF.file, 2*entry.cnt, entry.matlabType, TIF.BOS);
+                val = fread(TIF.file, 2*entry.cnt, entry.matlabType, TIF.ByteOrder);
                 entry.val = val(1:2:length(val)) ./ val(2:2:length(val));
             else
-                entry.val = fread(TIF.file, entry.cnt, entry.matlabType, TIF.BOS);
+                entry.val = fread(TIF.file, entry.cnt, entry.matlabType, TIF.ByteOrder);
             end
         end
         
@@ -800,7 +796,7 @@ end
 %% %%  Parse the Metamorph camera info tag into respective fields
 % EVBR 2/7/2005, FJN Dec. 2007
 
-    function mm = parseMetamorphInfoLine(line, mm)
+    function mmi = parseMetamorphInfoLine(line, mmi)
         
         [tok, val] = strtok(line, ':');
         
@@ -819,38 +815,37 @@ end
             %return the exposure in milli-seconds
             switch( unit )
                 case 'ms'
-                    mm.Exposure = v;
+                    mmi.Exposure = v;
                 case 's'
-                    mm.Exposure = v * 1000;
+                    mmi.Exposure = v * 1000;
                 otherwise
                     warning('tiffread:MetaMorphExposure', 'Exposure unit not recognized');
-                    mm.Exposure = v;
+                    mmi.Exposure = v;
             end
         else
             switch tok
                 case 'Binning'
                     % Binning: 1 x 1 -> [1 1]
-                    mm.Binning = sscanf(val, '%d x %d')';
+                    mmi.Binning = sscanf(val, '%d x %d')';
                 case 'Region'
-                    mm.Region = sscanf(val, '%d x %d, offset at (%d, %d)')';
+                    mmi.Region = sscanf(val, '%d x %d, offset at (%d, %d)')';
                 otherwise
                     try
                         if strcmp(val, 'Off')
-                            mm.(tok) = 0;
+                            mmi.(tok) = 0;
                             %eval(['mm.',tok,'=0;']);
                         elseif strcmp(val, 'On')
-                            mm.(tok) = 1;
+                            mmi.(tok) = 1;
                             %eval(['mm.',tok,'=1;']);
                         elseif isstrprop(val,'digit')
-                            mm.(tok) = val;
+                            mmi.(tok) = val;
                             %eval(['mm.',tok,'=str2num(val)'';']);
                         else
-                            mm.(tok) = val;
+                            mmi.(tok) = val;
                             %eval(['mm.',tok,'=val;']);
                         end
                     catch
-                        disp(field)
-                        warning('tiffread:MetaMorph', 'Invalid field');
+                        warning('tiffread:MetaMorph', ['Invalid token "' tok '"']);
                     end
             end
         end
@@ -858,21 +853,15 @@ end
         
         
     function res = parseMetamorphInfo(lines, cnt)
-
-        mmi = [];
-        idx = 1;
         chk = length(lines) / cnt;
-        
-        for n = 1:length(lines)
-            if mod(n, chk) == 0
-                %disp('-----')
-                res(idx) = mmi;
-                idx = idx + 1;
+        res = cell(cnt, 1);
+        length(lines)
+        for n = 1:cnt
+            mmi = [];
+            for k = 1:chk
+                mmi = parseMetamorphInfoLine(lines{chk*(n-1)+k}, mmi);
             end
-            if ~ isempty(lines{n})
-                %disp(lines{n})
-                mmi = parseMetamorphInfoLine(lines{n}, mmi);
-            end
+            res{n} = mmi;
         end
     end
 
@@ -885,38 +874,38 @@ end
         % this provides only very partial information, since the offset indicate that
         % additional data is stored in the file
         
-        R.MagicNumber          = sprintf('0x%09X',fread(TIF.file, 1, 'uint32', TIF.BOS));
-        S.StructureSize        = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.DimensionX           = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.DimensionY           = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.DimensionZ           = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.DimensionChannels    = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.DimensionTime        = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.IntensityDataType    = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.ThumbnailX           = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.ThumbnailY           = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.VoxelSizeX           = fread(TIF.file, 1, 'float64', TIF.BOS);
-        R.VoxelSizeY           = fread(TIF.file, 1, 'float64', TIF.BOS);
-        R.VoxelSizeZ           = fread(TIF.file, 1, 'float64', TIF.BOS);
-        R.OriginX              = fread(TIF.file, 1, 'float64', TIF.BOS);
-        R.OriginY              = fread(TIF.file, 1, 'float64', TIF.BOS);
-        R.OriginZ              = fread(TIF.file, 1, 'float64', TIF.BOS);
-        R.ScanType             = fread(TIF.file, 1, 'uint16', TIF.BOS);
-        R.SpectralScan         = fread(TIF.file, 1, 'uint16', TIF.BOS);
-        R.DataType             = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetVectorOverlay  = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetInputLut       = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetOutputLut      = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetChannelColors  = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        R.TimeInterval         = fread(TIF.file, 1, 'float64', TIF.BOS);
-        S.OffsetChannelDataTypes = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetScanInformatio = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetKsData         = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetTimeStamps     = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetEventList      = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetRoi            = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetBleachRoi      = fread(TIF.file, 1, 'uint32', TIF.BOS);
-        S.OffsetNextRecording  = fread(TIF.file, 1, 'uint32', TIF.BOS);
+        R.MagicNumber          = sprintf('0x%09X',fread(TIF.file, 1, 'uint32', TIF.ByteOrder));
+        S.StructureSize        = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.DimensionX           = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.DimensionY           = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.DimensionZ           = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.DimensionChannels    = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.DimensionTime        = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.IntensityDataType    = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.ThumbnailX           = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.ThumbnailY           = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.VoxelSizeX           = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        R.VoxelSizeY           = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        R.VoxelSizeZ           = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        R.OriginX              = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        R.OriginY              = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        R.OriginZ              = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        R.ScanType             = fread(TIF.file, 1, 'uint16', TIF.ByteOrder);
+        R.SpectralScan         = fread(TIF.file, 1, 'uint16', TIF.ByteOrder);
+        R.DataType             = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetVectorOverlay  = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetInputLut       = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetOutputLut      = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetChannelColors  = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        R.TimeInterval         = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
+        S.OffsetChannelDataTypes = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetScanInformatio = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetKsData         = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetTimeStamps     = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetEventList      = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetRoi            = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetBleachRoi      = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
+        S.OffsetNextRecording  = fread(TIF.file, 1, 'uint32', TIF.ByteOrder);
         
         % There is more information stored in this table, which is skipped here
         
@@ -929,10 +918,10 @@ end
                 return;
             end
             
-            StructureSize          = fread(TIF.file, 1, 'int32', TIF.BOS);
-            NumberTimeStamps       = fread(TIF.file, 1, 'int32', TIF.BOS);
+            StructureSize          = fread(TIF.file, 1, 'int32', TIF.ByteOrder);
+            NumberTimeStamps       = fread(TIF.file, 1, 'int32', TIF.ByteOrder);
             for i=1:NumberTimeStamps
-                R.TimeStamp(i)     = fread(TIF.file, 1, 'float64', TIF.BOS);
+                R.TimeStamp(i)     = fread(TIF.file, 1, 'float64', TIF.ByteOrder);
             end
             
             %calculate elapsed time from first acquisition:
