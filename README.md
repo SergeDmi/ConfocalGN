@@ -34,7 +34,7 @@ Where "stacks" is the simulated image, "offset" is the translation needed to ali
 "achieved_sig" is the mean signal value in the experiment, im is the post-segmentation image of stack.
 
 # Typical usage :
-To see an operational example of ConfocalGN, first run startup.m 
+To see an operational example of ConfocalGN, first run startup.m and uncompress ground_truth.tiff.gz.
 Then run usage_example.m
 
 # Credits & Licence
