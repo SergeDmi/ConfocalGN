@@ -60,6 +60,11 @@
 
 
 function result=gauss3filter(image, sigma, pixelspacing)
+    si=size(image);
+    if length(si)==2
+        si(3)=1;
+    end
+    
     if exist('pixelspacing', 'var')~=1
         pixelspacing=[1 1 1];
     end
@@ -83,13 +88,13 @@ function result=gauss3filter(image, sigma, pixelspacing)
     sigma2=sigma2^2;
     sigma3=sigma3^2;    
     
-    [u,v,w] = ifftshiftedcoormatrix3(size(image) );
+    [u,v,w] = ifftshiftedcoormatrix3(si);
     
 % The term "image*0" forces x, y and z to have the type as "image". They
 % are thus authomatically moved to GPU if "image" is an GPU array.
-    u=image*0 + u/size(image,1)/pixelspacing(1);    
-    v=image*0 + v/size(image,2)/pixelspacing(2);
-    w=image*0 + w/size(image,3)/pixelspacing(3);
+    u=image*0 + u/si(1)/pixelspacing(1);    
+    v=image*0 + v/si(2)/pixelspacing(2);
+    w=image*0 + w/si(3)/pixelspacing(3);
 
 % Original Gaussian kernel    
     fil = GaussianKernel(u, v, w, sigma1, sigma2, sigma3);
