@@ -48,7 +48,8 @@ This code includes the librairies :
 Code modified from Octave's : 
 - randg
 - gamrnd
-see tiffread.m ; octave_randg.m ; gamrnd_simpl.m for licencing information.
+
+See tiffread.m ; octave_randg.m ; gamrnd_simpl.m for licencing information.
 
 This code was developped by Serge Dmitrieff in 2016 in EMBL, with the support of François Nédélec.
 http://biophysics.fr
