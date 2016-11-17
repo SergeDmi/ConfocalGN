@@ -1,4 +1,4 @@
 %%--------------- Startup for confocal GN
-addpath('tiffread/')
-addpath('confocalGN/')
+addpath('cgn/')
+addpath('matned/')
 addpath('segmentation/')
