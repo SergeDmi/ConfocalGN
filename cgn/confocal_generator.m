@@ -72,12 +72,5 @@ end
 % Confocal generator
 [stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(img,conf,sig,noise,seg_options);
 
-if options.verbose>0
-    disp(['Target mean_pix : ' num2str(sig') '  -  target noise : ' num2str(noise')])
-    disp(['        Target SNR : ' num2str(sig(1)/noise(1))])
-    disp(['Achieved mean_pix : ' num2str(achieved_sig') '  -  achieved noise : ' num2str(achieved_noise')])
-    disp(['        Achieved SNR : ' num2str(achieved_sig(1)/achieved_noise(1))])
-end
-
 end
 

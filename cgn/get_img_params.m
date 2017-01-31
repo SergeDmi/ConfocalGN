@@ -16,25 +16,23 @@ function [ sig,noise,img,stack,mask] = get_img_params(image,options)
 % stack is the analyzed image (raw data)
 % mask are the background pixels 
 %
-% Serge Dmitrieff, N??d??lec Lab, EMBL 2016
+% Serge Dmitrieff, Nélec Lab, EMBL 2016
 % www.biophysics.fr
 
 defopt=cgn_options_load();
 if nargin<2
     options=defopt;
+    if nargin<1
+        error('Error : get_img_params requires an image or or image filename')
+    end
 end
 if isfield(options,'segmentation')
     options=options.segmentation;
 end
-if isfield(options,'filt')
-    filt=options.filt;
-else
-    filt=defopt.filt;
-end
 if isfield(options,'ix')
     ix=options.ix;
 else
-    ix=defopt.ix;
+    ix=defopt.segmentation.ix;
 end
 
 if ischar(image)
@@ -66,7 +64,7 @@ end
 %-------------------------------------------------------------------------
 % mask are the pixels to be filtered OUT, i.e. noise
 % img is the resulting image
-[img,mask]=segment_image(stack,filt);
+[img,mask]=segment_image(stack,options);
 
 %% Computing signal & noise properties
 % Background value in original image

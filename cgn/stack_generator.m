@@ -88,5 +88,16 @@ end
 %% Stack generation
 [ stack,offset] = generate_stacks( img,conf,sig,noise);
 [SIG,NOISE,img]=get_img_params(stack,options);
+
+
+% we compare the 'target' signal and noise (sig,noise) to the signal and
+% noise obtained by the simulator
+if options.verbose>0
+    disp(['Target mean_pix : ' num2str(sig') '  -  target noise : ' num2str(noise')])
+    disp(['        Target SNR : ' num2str(sig(1)/noise(1))])
+    disp(['Achieved mean_pix : ' num2str(achieved_sig') '  -  achieved noise : ' num2str(achieved_noise')])
+    disp(['        Achieved SNR : ' num2str(achieved_sig(1)/achieved_noise(1))])
+end
+
 end
 
