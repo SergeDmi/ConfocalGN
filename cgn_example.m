@@ -22,6 +22,11 @@ conf.psf=[13 13 22];
 if 1
     % Reading Noise and Signal parameters from image
     sample='sample_image.tiff';
+    %% Making a ground truth file if there is none
+    if exist(truth, 'file')<2
+        make_ground_truth(truth)
+        disp('Generated ground truth')
+    end
     %% Generating the stack from the image
     % Includes pixel noise
     [stacks,offset,achieved_sig,achieved_noise,im,mean_sig,noise]=confocal_generator(truth,conf,sample);
