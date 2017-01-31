@@ -24,24 +24,34 @@ In addition, ConfocalGN may optionally include:
 To use the confocal generator, the user must provide :
 
 1 - A ground truth image IMG (a 3D matrix or a TIFF file)
+The ground truth image should be a high resolution image. By default the ground truth image
+should be isotropic, but non-isotropic images are possible provded CONF.pix and CONF.psf are 
+scaled accordingly. 
 
 2 - A parameter structure CONF, containing:
 -- CONF.pix : voxel size (in units of the pixel size of IMG), a 3x1 vector
 -- CONF.psf : parameters of the point spread function (in units of the pixel size of IMG)
 This is a 3x1 vector; containing the standard deviation of the PSF in each direction.
+The PSF is assumed then to be a 3D Gaussian built from these parameters.
+The PSF deviations can be obtained from PSF simulating software(e.g. Huygens/Icy) 
+or from analysis of experimental data (e.g. with Huygens/Mosaic)
 
 3A - A noise distribution NOISE
 3A - A signal value SIG 
-
 or
-
 3B - A sample image (array or image name) SAMPLE for the program to derive NOISE and SIG
+    ConfocalGN segments the image (using a default or user-provided segmentation function)
+    The pixels above the threshold are considered as signal, the others as background
+NOISE is a 3x1 vector of the 3 first moments of the background pixel values
+SIG is the mean of the signal pixel values
 
 
 Optionally, the user can also specify:
 - Sampling and segmentation options by editing the file confocal_options.m
 - Custom segmentation program by replacing the file segment_image.m with another equivalent segmentation method
-
+    The segmentation program is used to recognize background from signal
+    The replacing function must be of the format [ img,mask] = segment_image(image,options)
+    see segment_image for the definitions of img,mask,image,options
 
 # Operating ConfocalGN
 
@@ -65,7 +75,7 @@ The output is the same in both case:
 - `acheived_sig` : mean signal value in the simulated image
 - `achieved_noise` : noise distribution in the simulated image
 - `im` : post-segmentation image of stack
-.
+
 
 # Example :
 
@@ -84,7 +94,7 @@ This code includes the librairies :
 - tiffread Copyright (C) 1999-2010 Francois Nedelec
 - gausss3filter Copyright (C) Max W.K. Law
 - Octave code (Copyright (C) 2006-2015 John W. Eaton), under GPL licence
-
+- saveastiff, (Copyright (c) 2012, YoonOh Tak)
 
 Code modified from GNU Octave : 
 - randg
