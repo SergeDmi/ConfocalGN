@@ -52,16 +52,10 @@ if nargin<4
     options=defopt;
 end
 
-if isfield(options,'sample')
-    sample_options=options.sample;
+if isfield(options,'sampling')
+    sample_options=options.sampling;
 else
-    sample_options=defopt.sample;
-end
-
-if isfield(options,'segmentation')
-    seg_options=options.segmentation;
-else
-    seg_options=defopt.segmentation;
+    sample_options=defopt.sampling;
 end
 
 if ~isfield(options,'verbose')
@@ -70,7 +64,7 @@ end
 % Finding parameters from the image
 [sig,noise]=get_img_params(sample,sample_options);
 % Confocal generator
-[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(img,conf,sig,noise,seg_options);
+[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(img,conf,sig,noise,options);
 
 end
 

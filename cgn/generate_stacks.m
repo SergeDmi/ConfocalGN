@@ -1,4 +1,4 @@
-function [ stack,offset] = generate_stacks( img,conf,sig,noise)
+function [ stack,offset] = generate_stacks( img,conf,sig,noise,options)
 % generate_stacks : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -84,26 +84,26 @@ else
 end
 
 
+if nargin<5
+    options=cgn_options_load();
+end
+if isfield(options,'segmentation')
+    options=options.segmentation;
+end
 
 
 %% 3D Convoluting of the image
-if sum(psf>0)
-	% Enable this if you have Parrallel Computing Toolbox enabled
-    %img=gauss3filter(gpuArray(img),psf);
-    img=gauss3filter(img,psf);
-end
+% by default, convolved with a gaussian kernel
+img=convolve_with_psf(img,psf);
 
 %% Taking the pixels 
-s=size(img);
-nn=floor(s./pix);
-di=ceil(pix(1)/2.0);
-dj=ceil(pix(2)/2.0);
-dk=ceil(pix(3)/2.0);
-offset=-[di dj dk];
-stack=img(di+(0:(nn(1)-1))*pix(1),dj+(0:(nn(2)-1))*pix(2),dk+(0:(nn(3)-1))*pix(3));
+[stack,offset,nn]=stack_from_img(img,pix);
 
-%% Estimating signal & noise levels to calibrate noise
-[ Ssig,Snoise] = get_img_params(stack);
+%% Generating pixel noise
+px_noise=pixel_noise(noise,nn);
+
+%% Estimating signal & noise levels and calibrating noise
+[ Ssig,Snoise] = get_img_params(stack,options);
 f=Ssig(1);
 b=Snoise(1);
 % Desired signal to noise 
@@ -112,21 +112,7 @@ s=sig(1)/noise(1);
 B=(f-s*b)/(s-1);
 A=1/(b+B);
 stack=A*(stack+B);
-
-%% Adding noise
-if noise(3)==0
-    % if no skew, gaussian noise
-	px_noise=noise(1)+sqrt(noise(2))*box_muller(nn(1)*nn(2)*nn(3));
-else
-    % if skew, then Gamma distribution 
-    [px_off,k,theta]=gamma_params(noise);
-    if k<0 || theta<0
-        % Not enough skew, back to gaussian noise
-       	px_noise=noise(1)+sqrt(noise(2))*box_muller(nn(1)*nn(2)*nn(3));
-    else
-        px_noise=px_off+gamrnd_simpl(k,theta,nn(1)*nn(2)*nn(3));
-    end
-end
+%% We multiply the stack by the noise
 stack(:)=stack(:).*px_noise(:);
 end
 

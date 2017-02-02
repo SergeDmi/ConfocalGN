@@ -82,12 +82,14 @@ if nargin<5
     options=defopt;
 end
 if isfield(options,'segmentation')
-   options=options.segmentation;
+   seg_options=options.segmentation;
+else
+    seg_options=defopt.segmentation;
 end
 
 %% Stack generation
-[ stack,offset] = generate_stacks( img,conf,sig,noise);
-[SIG,NOISE,img]=get_img_params(stack,options);
+[ stack,offset] = generate_stacks( img,conf,sig,noise,seg_options);
+[SIG,NOISE,img]=get_img_params(stack,seg_options);
 
 
 % we compare the 'target' signal and noise (sig,noise) to the signal and
@@ -95,8 +97,8 @@ end
 if options.verbose>0
     disp(['Target mean_pix : ' num2str(sig') '  -  target noise : ' num2str(noise')])
     disp(['        Target SNR : ' num2str(sig(1)/noise(1))])
-    disp(['Achieved mean_pix : ' num2str(achieved_sig') '  -  achieved noise : ' num2str(achieved_noise')])
-    disp(['        Achieved SNR : ' num2str(achieved_sig(1)/achieved_noise(1))])
+    disp(['Achieved mean_pix : ' num2str(SIG') '  -  achieved noise : ' num2str(NOISE')])
+    disp(['        Achieved SNR : ' num2str(SIG(1)/NOISE(1))])
 end
 
 end

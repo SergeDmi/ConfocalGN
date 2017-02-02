@@ -11,8 +11,8 @@ opt.segmentation.filt             = [1 1 0];
 opt.segmentation.ix               = [];
 
 % Options for sample segmentation
-opt.sample.filt                   = [1 1 0];
-opt.sample.ix                     = 9:16;
+opt.sampling.filt                   = [1 1 0];
+opt.sampling.ix                     = 9:16;
 
 % Misc
 opt.verbose                       = 0;
