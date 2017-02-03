@@ -8,6 +8,9 @@
 % Ground truth can be an image file or a stack, in high resolution
 
 truth='ground_truth.tiff';
+save=0;
+display=1;
+plot=1;
 
 %% Parameters for ConfocalGN
 
@@ -19,6 +22,8 @@ conf.pix=[8 8 32];
 % Standard deviation of the PSF in the 3 dimensions provided in units of ground truth pixel size
 conf.psf=[13 13 22];
 
+
+%% Here we present two ways of using ConfocalGN
 if 1
     % Reading Noise and Signal parameters from image
     sample='sample_image.tiff';
@@ -39,33 +44,20 @@ else
     [stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(truth,conf,noise,mean_sig);
 end
 
-
-%% Display simulated image:
-for i = 1:size(stacks, 3)
-    show(stacks(:,:,i));
+%% Save simulated image
+if save
+    output='simulated_stack.tiff';
+    saveastiff(stacks,output);
 end
 
+%% Display simulated image:
+if display
+    for i = 1:size(stacks, 3)
+        show(stacks(:,:,i));
+    end
+end
 
 %% Display Image segmentation & plotting to compare simulated data to original
-if 1
-    % Convert from stack to pixel coordinatees Pts and intensities W
-    % (because of smaller scale, there is an offset between the stack and
-    % the ground truth) 
-    [ Pts, W ] = convertpoints(im, conf.pix, offset);
-
-    % Converting ground truth image to points
-    [ ~,~,img2] = get_img_params(truth);
-    pts = convertpoints(img2);
-
-    % convert the coordinates to voxel units
-    Pts(:)=Pts(:)/conf.pix(1);
-    pts(:)=pts(:)/conf.pix(1);
-
-    % Plot data points:
-    figure
-    hold all
-    scatter3(pts(1,:),pts(2,:),pts(3,:),'k.')
-    scatter3(Pts(1,:),Pts(2,:),Pts(3,:),'b')
-    axis equal
-
+if plot
+    plot_simul_results(truth,im,conf,offset)
 end
