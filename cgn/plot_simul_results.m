@@ -1,6 +1,6 @@
 function [  ] = plot_simul_results(truth,im,conf,offset,options)
 % plot results of simulated stacks
-%   compares ground truth properties to simulated
+%   compares ground truth to simulated
 
 defopt=cgn_options_load();
 if nargin<5
@@ -14,20 +14,22 @@ if isfield(options,'segmentation')
 end
 
 
- % Convert from stack to pixel coordinatees Pts and intensities W
+%% Convert from stack to pixel coordinatees Pts and intensities W
 % (because of smaller scale, there is an offset between the stack and
 % the ground truth) 
 Pts  = convertpoints(im, conf.pix, offset);
 
-% Converting ground truth image to points
+%% Converting ground truth image to points
 img2=segment_image(truth,options);
 pts = convertpoints(img2);
 
-% convert the coordinates to voxel units
+%% convert the coordinates to voxel units
 Pts(:)=Pts(:)/conf.pix(1);
 pts(:)=pts(:)/conf.pix(1);
 
-% Plot data points:
+%% Plot data points:
+% In blue : simulated pixels after thresholding
+% In black : ground truth
 figure
 hold all
 scatter3(pts(1,:),pts(2,:),pts(3,:),'k.')
