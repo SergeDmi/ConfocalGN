@@ -36,9 +36,8 @@ The PSF is assumed then to be a 3D Gaussian built from these parameters.
 The PSF deviations can be obtained from PSF simulating software(e.g. Huygens/Icy) 
 or from analysis of experimental data (e.g. with Huygens/Mosaic)
 
-3A - A noise distribution NOISE
-3A - A signal value SIG 
-or
+3A - A noise distribution NOISE and a signal value SIG    -- or 
+
 3B - A sample image (array or image name) SAMPLE for the program to derive NOISE and SIG
     ConfocalGN segments the image (using a default or user-provided segmentation function)
     The pixels above the threshold are considered as signal, the others as background
