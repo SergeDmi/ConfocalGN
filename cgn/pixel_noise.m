@@ -13,7 +13,7 @@ else
         % Not enough skew, back to gaussian noise
        	px_noise=noise(1)+sqrt(noise(2))*box_muller(nn(1)*nn(2)*nn(3));
     else
-        px_noise=px_off+gamrnd_simpl(k,theta,nn(1)*nn(2)*nn(3));
+        px_noise=px_off+gamma_random(k,theta,nn(1)*nn(2)*nn(3));
     end
 end
 
