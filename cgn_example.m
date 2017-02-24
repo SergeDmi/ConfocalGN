@@ -7,7 +7,7 @@
 
 % Ground truth can be an image file or a stack, in high resolution
 
-truth='ground_truth.tiff';
+truth_file='ground_truth.tiff';
 save=0;
 display=1;
 plot=1;
@@ -28,8 +28,8 @@ if 1
     % Reading Noise and Signal parameters from image
     sample='sample_image.tiff';
     %% Making a ground truth file if there is none
-    if exist(truth, 'file')<2
-        make_ground_truth(truth)
+    if exist(truth_file, 'file')<2
+        truth=make_ground_truth(truth_file);
         disp('Generated ground truth')
     end
     %% Generating the stack from the image
