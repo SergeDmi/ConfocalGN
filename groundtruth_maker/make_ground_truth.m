@@ -1,4 +1,4 @@
-function [img,pts]=make_ground_truth(fname)
+function [img,pts]=make_ground_truth(fname,options)
 % Make a ground truth image, i.e. an isotropic high resolution 3D image
 %   Here we make a baseball seam shape
 %   This function is for demonstration purposes
