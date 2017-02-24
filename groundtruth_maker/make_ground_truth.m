@@ -5,7 +5,7 @@ function [img,pts]=make_ground_truth(fname)
 %   Pipeline : parameters > points > image
 
 if nargin < 1
-    fname='ground_truth.tiff';
+    fname=[];
 end
 
 %% PARAMETER for ground truth generation
@@ -39,6 +39,8 @@ RR=generate_bbseam(Npts,b,R,dt,angs);
 [img,pts]=generate_pts_img(Npts,RR,d,fluo,bkgd);
 %img=double(img);
 %save_to_tiff(img,'ground_truth.tiff');
-saveastiff(img,fname);
+if ~isempty(fname)
+    saveastiff(img,fname);
+end
 
 end
