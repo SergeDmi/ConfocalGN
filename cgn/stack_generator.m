@@ -80,12 +80,12 @@ end
 defopt=cgn_options_load();
 if nargin<5
     options=defopt;
-end
-if isfield(options,'segmentation')
-   seg_options=options.segmentation;
 else
-    seg_options=defopt.segmentation;
+    options=complete_options(options,defopt);
 end
+
+
+seg_options=options.segmentation;
 
 %% Stack generation
 [ stack,offset] = generate_stacks( img,conf,sig,noise,seg_options);

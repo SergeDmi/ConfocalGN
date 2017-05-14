@@ -1,4 +1,4 @@
-function [ stack,offset] = generate_stacks( img,conf,sig,noise,options)
+function [ stack,offset] = generate_stacks( img,conf,sig,noise,options,tolerance)
 % generate_stacks : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -83,17 +83,20 @@ else
     end
 end
 
+defopt=cgn_options_load();
+defopt=defopt.segmentation;
 
 if nargin<5
-    options=cgn_options_load();
-end
-if isfield(options,'segmentation')
-    options=options.segmentation;
+    options=defopt;
+else
+    options=complete_options(options,defopt);
 end
 
+if nargin<6
+    tolerance=[];
+end
 
 %% 3D Convoluting of the image
-% by default, convolved with a gaussian kernel
 img=convolve_with_psf(img,psf);
 
 %% Taking the pixels 

@@ -1,4 +1,4 @@
-function [ sig,noise,img,stack,mask] = get_img_params(image,options)
+function [ sig,noise,img,stack,mask] = get_img_params(sample_image,options)
 % Finds mean pixel value of signal, and background distribution in image
 %   For this we segment the image (gaussian filter+thresholding)
 %   image can be a filename (then loaded with tiffread)
@@ -19,6 +19,7 @@ function [ sig,noise,img,stack,mask] = get_img_params(image,options)
 % Serge Dmitrieff, Nélec Lab, EMBL 2016
 % www.biophysics.fr
 
+mask=[];
 defopt=cgn_options_load();
 if nargin<2
     options=defopt;
@@ -29,11 +30,20 @@ end
 if isfield(options,'segmentation')
     options=options.segmentation;
 end
-if isfield(options,'ix')
-    ix=options.ix;
+
+defopt=defopt.segmentation;
+options=complete_options(options,defopt);
+ix=options.ix;
+
+if isfield(sample_image,'image')
+    image=sample_image.image;
+    if isfield(sample_image,'mask')
+        mask=sample_image.mask;
+    end
 else
-    ix=defopt.segmentation.ix;
+    image=sample_image;
 end
+
 
 if ischar(image)
     if ~isempty(ix)
@@ -58,19 +68,17 @@ else
     end
 end
 
-%% Segmenting image
-%-------------------------------------------------------------------------
-% USER : Replace segment_image by your own segmenting procedure if need be
-%-------------------------------------------------------------------------
-% mask are the pixels to be filtered OUT, i.e. noise
-% img is the resulting image
-[img,mask]=segment_image(stack,options);
+if isempty(mask)
+    % mask are the signal pixels
+    mask=provide_image_mask(stack,options);
+end
 
+img=stack.*mask;
 %% Computing signal & noise properties
 % Background value in original image
-bkg=stack(mask);
+bkg=stack(~mask);
 % Signal value in original image
-frt=stack(~mask);
+frt=stack(mask);
 % Observables
 noise=moments(bkg);
 sig=moments(frt);
