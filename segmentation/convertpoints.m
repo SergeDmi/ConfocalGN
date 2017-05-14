@@ -15,7 +15,7 @@ s=size(img);
 l=length(pixsizes);
 
 if length(s)==l && length(s)<4
-   	ixes=logical(~isnan(img(:)))';
+   	ixes=logical(~isnan(img(:)).*(img(:)>0))';
 	if l==1
         % 1D
 		X=pixsizes(1)*(1:s(1));

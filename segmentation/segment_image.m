@@ -1,4 +1,4 @@
-function [ img,mask] = segment_image(image,options)
+function [ img,sig_mask,bg_mask] = segment_image(image,options)
 % Minimal image segmentation function
 %   Gaussian blurring + thresholding
 %   Should be replaced by your own !
@@ -19,16 +19,11 @@ end
 if isfield(options,'segmentation')
     options=options.segmentation;
 end
-if isfield(options,'filt')
-    filt=options.filt;
-else
-    filt=defopt.segmentation.filt;
-end
-if isfield(options,'ix')
-    ix=options.ix;
-else
-    ix=defopt.segmentation.ix;
-end
+defopt=defopt.segmentation;
+options=complete_options(options,defopt);
+
+filt=options.filt;
+ix=options.ix;
 
 if ischar(image)
     if ~isempty(ix)
@@ -55,8 +50,8 @@ end
 % Blurring
 img=gauss3filter(stack,filt);
 % Thresholding
-[img,mask]=threshold(img);
-
+[img,bg_mask]=threshold(img);
+sig_mask=~bg_mask;
 
 end
 
