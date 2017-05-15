@@ -1,4 +1,4 @@
-function [ stacks,offset,achieved_sig,achieved_noise,im,sig,noise] = confocal_generator(img,conf,sample,options)
+function [ res,truth,sample_prop] = confocal_generator(truth,conf,sample,options)
 % confocal_generator : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -63,8 +63,10 @@ if ~isfield(options,'verbose')
 end
 % Finding parameters from the image
 [sig,noise]=get_img_params(sample,sample_options);
+sample_prop.sig=sig;
+sample_prop.noise=noise;
 % Confocal generator
-[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(img,conf,sig,noise,options);
+[res,truth]=stack_generator(truth,conf,sig,noise,options);
 
 end
 

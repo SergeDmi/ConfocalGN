@@ -16,5 +16,6 @@ opt.sampling.ix                     = 9:16;
 
 % Misc
 opt.verbose                       = 0;
+opt.truth_fname                   = 'ground_truth.tiff';
 
 return

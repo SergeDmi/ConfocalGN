@@ -5,31 +5,41 @@ function opt = gtm_options_load(verbose)
 % F. Nedelec, 20 Nov. 2012
 
 if nargin < 1
-    verbose = 0;
+    verbose = [];
 end
 
 
 %% Load options
 
-f = dir('gtm_options.m');
+f = 'gtm_options.m';
 
-if ~ isempty(f)
+if exist(f,'file')==2
     
-    if verbose
-        fprintf(2,'Loading local options from %s\n', f.name);
+    opt = gtm_options;
+    if isfield(opt,'verbose') && isempty(verbose)
+        verbose=opt.verbose;
     end
         
-    opt = gtm_options;
+    if verbose
+        fprintf(2,'Loading local options from %s\n', f);
+    end
+        
+    
     
 else
     
+    opt = gtm_options_default;
+    
+    if isfield(opt,'verbose') && isempty(verbose)
+        verbose=opt.verbose;
+    end
+        
     if verbose
         fprintf(2,'Loading default options\n');
     end
     
-    opt = gtm_options_default;
+    
 
 end
-
 
 end

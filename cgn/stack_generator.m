@@ -1,4 +1,4 @@
-function [ stack,offset,SIG,NOISE,img] = stack_generator( img,conf,sig,noise,options)
+function [ res,truth] = stack_generator( truth,conf,sig,noise,options)
 % stac_generator : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -77,21 +77,51 @@ else
     end
 end
 
-defopt=cgn_options_load();
+defopt=cgn_options_default;
 if nargin<5
-    options=defopt;
+    options=cgn_options_load();
 else
     options=complete_options(options,defopt);
 end
-
-
 seg_options=options.segmentation;
+outfile=options.truth_fname;
 
-%% Stack generation
+%% Loading image
+make_truth=0;
+if ~isfield(truth,'img')
+    make_truth=1;
+elseif isempty(truth.img)
+    make_truth=1;
+end
+
+if make_truth
+    if isfield(truth,'options')
+        truth_options=truth.options;
+        truth=make_ground_truth(truth,outfile,truth_options);
+    else
+        truth=make_ground_truth(truth,outfile);
+    end
+end
+img=truth.img;
+        
+if ~isfield(truth,'pix')
+    error('You must provide a pixel size')
+elseif isempty(truth.pix)
+    error('You must provide a pixel size')
+else
+    %% Stack generation
+    conf.pix=conf.pix./truth.pix;
+    conf.psf=conf.psf./truth.pix;
+end
+
 [ stack,offset] = generate_stacks( img,conf,sig,noise,seg_options);
 [SIG,NOISE,img]=get_img_params(stack,seg_options);
 
-
+res.stack=stack;
+res.offset=offset;
+res.sig=SIG;
+res.noise=NOISE;
+res.img=img;
 % we compare the 'target' signal and noise (sig,noise) to the signal and
 % noise obtained by the simulator
 if options.verbose>0

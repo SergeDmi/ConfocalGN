@@ -1,4 +1,4 @@
-function [img,points]=make_img_from_points(input,options)
+function [img,points,pixsizes]=make_img_from_points(input,options)
 % Generates an image from a list of points
 
 %% Reading options
@@ -17,7 +17,9 @@ bkgd=options.background;
 mode=options.fluorophore;
 sizes=options.image_size;
 offset=options.offset;
-scaling=options.scaling;
+pixsize=options.pix_size;
+overscale=options.overscale;
+pts_scale=options.pts_scale;
 
 %% Loading the points
 if ischar(input)
@@ -44,7 +46,16 @@ if s(2)<3
     points=pp;
 end
 
-if isempty(scaling)
+
+if isempty(sizes) && isempty(pixsize)
+    error('You must provide an image size or pixel size')
+end
+
+if ~isempty(pts_scale)
+    points=points.*pts_scale;
+end
+
+if isempty(pixsize)
      % If no scaling, auto-scale to fit image size
     if options.verbose
         disp('Attempting to automatically scale points to fit in image')
@@ -55,10 +66,11 @@ if isempty(scaling)
         ddiff(i)=max(points(:,i))-min(points(:,i));
         scales(i)=ddiff(i)/sizes(i);
     end
-    scaling=(max(scales)*1.5);
+    scaling=(max(scales)*overscale);
+    pixsizes=scaling;
 end
-points=points/scaling;
 
+points=points./pixsizes;
 
 %% Centering and scaling point to reach desired sizes
 if isempty(offset)

@@ -10,8 +10,9 @@ elseif nargin<3
 end
 
 %% For a fields, checking is field exists
-for field=ofields
-    fname=field{1};
+nf=numel(ofields);
+for n=1:nf
+    fname=ofields{n};
     if ~isfield(opt,fname)
         % Loading from the default options
         value=getfield(defopt,fname);
