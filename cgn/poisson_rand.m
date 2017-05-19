@@ -1,6 +1,8 @@
 function [ Y ] = poisson_rand( l,N )
 % Simple poisson random number generator
 %   Implementing Knuth Algorithm
+% S. Dmitrieff, 2017
+% http://biophysics.fr
 Y = zeros(N,1);
 X = rand(N,1);
 el=exp(-l);

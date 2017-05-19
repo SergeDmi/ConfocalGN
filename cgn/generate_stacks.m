@@ -92,10 +92,6 @@ else
     options=complete_options(options,defopt);
 end
 
-if nargin<6
-    tolerance=[];
-end
-
 %% 3D Convoluting of the image
 img=convolve_with_psf(img,psf);
 
@@ -103,18 +99,18 @@ img=convolve_with_psf(img,psf);
 [stack,offset,nn]=stack_from_img(img,pix);
 
 %% Generating pixel noise
-px_noise=pixel_noise(noise,nn);
+px_noise=pixel_distribution(noise,nn);
 
 %% Estimating signal & noise levels and calibrating noise
 [ Ssig,Snoise] = get_img_params(stack,options);
-f=Ssig(1);
-b=Snoise(1);
+S=Ssig(1);
+B=Snoise(1);
 % Desired signal to noise 
-s=sig(1)/noise(1);
+SNR=sig(1)/noise(1);
 % Linear algebra on stack to reach desired signal and noise level
-B=(f-s*b)/(s-1);
-A=1/(b+B);
-stack=A*(stack+B);
+b=(S-SNR*B)/(SNR-1);
+a=1/(B+b);
+stack=a*(stack+b);
 %% We multiply the stack by the noise
 stack(:)=stack(:).*px_noise(:);
 end

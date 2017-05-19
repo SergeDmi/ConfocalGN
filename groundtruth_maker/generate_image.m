@@ -9,23 +9,7 @@ function [img]=generate_image(Sizes,RR,fluo,bkgd,mode)
 
 %% Default parameters
 if nargin<5
-    mode='poisson';
-    if nargin<4
-        bkgd=[0 0 0];
-        if nargin<3
-            fluo=1;
-        end
-    end
-    if length(fluo)==3
-        mode='gamma';
-    end
-end
-if strcmp(mode,'gamma')
-    if length(fluo)<3
-        fluo=fluo(1);
-        warning('Not engough signal moments, switching to poisson distribution')
-        mode='poisson';
-    end
+    mode='';
 end
         
 if length(bkgd)<3
@@ -41,26 +25,8 @@ end
 img=zeros(Sizes);
 s=size(RR);
 NS=s(1);
-if strcmp(mode,'gamma')
-    if fluo(3)==0
-        % if no skew, gaussian nois
-        sig=fluo(1)+sqrt(fluo(2))*box_muller(NS);
-    else
-        % if skew, then Gamma distribution 
-        [px_off,k,theta]=gamma_params(fluo);
-        if k<0 || theta<0
-            % Not enough skew, back to gaussian noise
-            sig=fluo(1)+sqrt(fluo(2))*box_muller(NS);
-        else
-            sig=px_off+gamma_random(k,theta,NS);
-        end
-    end
-elseif  strcmp(mode,'poisson')
-    sig=poisson_rand(fluo(1),NS);
-else
-    sig=ones(1,NS)*fluo(1);
-end
-    
+sig=pixel_distribution(fluo,NS,mode);
+
 %% Summing the fluorescence to each voxel
 % We count the fluorophores per high-res voxel and add the fluorescence to
 % the image
