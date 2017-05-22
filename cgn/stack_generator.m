@@ -110,8 +110,12 @@ elseif isempty(truth.pix)
     error('You must provide a pixel size')
 else
     %% Stack generation
+    if isnumeric(conf.psf)
+        if 4>length(conf.psf)
+            conf.psf=conf.psf./truth.pix;
+        end
+    end
     conf.pix=conf.pix./truth.pix;
-    conf.psf=conf.psf./truth.pix;
 end
 
 [ stack,offset] = generate_stacks( img,conf,sig,noise,seg_options);
