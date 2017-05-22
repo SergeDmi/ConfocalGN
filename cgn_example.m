@@ -5,7 +5,7 @@
 
 
 %% Example options
-save=0;
+save=1;
 display=1;
 do_plot=1;
 
@@ -24,8 +24,8 @@ truth.source='ground_truth.txt';
 conf.pix=[150 150 600];
 % Property of the microscope PSF
 % Standard deviation of the PSF in the 3 dimensions provided in units of ground truth pixel size
-conf.psf=[250 250 500];
-
+%conf.psf=[250 250 500];
+conf.psf='ex_psf.tiff';
 
 %% Here we present two ways of using ConfocalGN
 if 1

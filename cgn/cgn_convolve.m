@@ -6,6 +6,7 @@ if nargin<3
     mode='';
 end
 
+
 if isempty(mode)
 	mode='full';
     if isnumeric(psf)
@@ -14,14 +15,22 @@ if isempty(mode)
         end
     else
         try 
-            psf=tiffread(psf);
+            psf=get_stack(tiffread(psf));
         catch
             error('Unsupported PSF format : must be matlab array or tiff file');
         end
     end
 else
     mode=lower(mode);
+     if ~isnumeric(psf)
+         try 
+            psf=get_stack(tiffread(psf));
+        catch
+            error('Unsupported PSF format : must be matlab array or tiff file');
+         end
+     end
 end
+
 
 if strcmp(mode,'gaussian')
     cvd=convolve_with_gaussian_psf(img,psf);
