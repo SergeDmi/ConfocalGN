@@ -21,7 +21,7 @@ truth.source='ground_truth.txt';
 %% Parameters for ConfocalGN
 % pix : size of a simulated voxel
 % ground truth is high res compared to confocal
-conf.pix=[150 150 600];
+conf.pix=[200 200 800];
 % Property of the microscope PSF
 % Standard deviation of the PSF in the 3 dimensions provided in units of ground truth pixel size
 %conf.psf=[250 250 500];
@@ -42,6 +42,24 @@ else
     mean_sig=1.0022e+03;
     [res,truth,sample_prop]=stack_generator(truth,conf,noise,mean_sig);
 end
+%% Output : 
+% res is the result containing : 
+%   res.stack : the simulated stack
+%   res.sig : mean value of simulated signal voxels
+%   res.noise : moments of the simulated background voxels values
+%   res.img : the image obtained from segmenting res.stack
+%   res.offset : spatial offset between the stack and the ground truth
+% truth is the structure containing
+%   truth.points : fluorophore coordinates of the ground truth
+%   truth.img : ground truth image
+%   truth.pix : size of a ground truth pixel in physical units
+% sample is the sample information, containing :
+%   sample.sig : mean value of the sample signal voxels
+%   sample.noise : moments of the sample background voxels values
+%   (sample.img) : sample image
+
+
+%% Plotting and saving
 stacks=res.stack;
 
 %% Save simulated image
