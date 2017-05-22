@@ -102,23 +102,11 @@ if make_truth
         truth=make_ground_truth(truth,outfile);
     end
 end
-img=truth.img;
-        
-if ~isfield(truth,'pix')
-    error('You must provide a pixel size')
-elseif isempty(truth.pix)
-    error('You must provide a pixel size')
-else
-    %% Stack generation
-    if isnumeric(conf.psf)
-        if 4>length(conf.psf)
-            conf.psf=conf.psf./truth.pix;
-        end
-    end
-    conf.pix=conf.pix./truth.pix;
-end
 
-[ stack,offset] = generate_stacks( img,conf,sig,noise,seg_options);
+        
+
+
+[ stack,offset] = generate_stacks( truth,conf,sig,noise,seg_options);
 [SIG,NOISE,img]=get_img_params(stack,seg_options);
 
 res.stack=stack;

@@ -15,9 +15,6 @@ end
 im=res.img;
 offset=res.offset.*truth.pix;
 
-%conf.pix=(conf.pix);
-
-
 %% Convert from stack to pixel coordinatees Pts and intensities W
 % (because of smaller scale, there is an offset between the stack and
 % the ground truth) 

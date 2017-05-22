@@ -1,4 +1,4 @@
-function [ stack,offset] = generate_stacks( img,conf,sig,noise,options,tolerance)
+function [ stack,offset] = generate_stacks( truth,conf,sig,noise,options,tolerance)
 % generate_stacks : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
@@ -50,8 +50,25 @@ function [ stack,offset] = generate_stacks( img,conf,sig,noise,options,tolerance
 if nargin<2
     error('You must provide an image and confocal imaging properties');
 end
-psf=conf.psf;
-pix=conf.pix;
+
+img=truth.img;
+
+if ~isfield(truth,'pix')
+    error('You must provide a pixel size')
+elseif isempty(truth.pix)
+    error('You must provide a pixel size')
+else
+    %% Stack generation
+    psf=conf.psf;
+    if isnumeric(psf)
+        if 4>length(psf)
+            psf=psf./truth.pix;
+        end
+    end
+    pix=conf.pix./truth.pix;
+end
+
+
 
 % If img is the name of a tiff file, importing it as an array
 if ischar(img)
@@ -93,10 +110,12 @@ else
 end
 
 %% 3D Convoluting of the image
-img=convolve_with_psf(img,psf);
+[img,off1]=convolve_with_psf(img,psf);
 
 %% Taking the pixels 
-[stack,offset,nn]=stack_from_img(img,pix);
+[stack,off2,nn]=stack_from_img(img,pix);
+
+offset=off1+off2;
 
 %% Generating pixel noise
 px_noise=pixel_distribution(noise,nn);
