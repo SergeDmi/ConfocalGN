@@ -34,12 +34,13 @@ should be isotropic, but non-isotropic images are possible provided CONF.pix and
 scaled accordingly. 
 
 2 - A parameter structure CONF, containing:
--- CONF.pix : voxel size (in units of the pixel size of IMG), a 3x1 vector
--- CONF.psf : parameters of the point spread function (in units of the pixel size of IMG)
-This is a 3x1 vector; containing the standard deviation of the PSF in each direction.
-The PSF is assumed then to be a 3D Gaussian built from these parameters.
-The PSF deviations can be obtained from PSF simulating software(e.g. Huygens/Icy) 
-or from analysis of experimental data (e.g. with Huygens/Mosaic)
+-- `CONF.pix` : confocall voxel size (in physical units), a 3x1 vector
+-- `CONF.psf` : microscope 2-way point spread function
+`conf.psf` can be 
+- an image (matlab matrix or tiff file), with the same pixel size as the ground truth image
+- a 3x1 vector; containing the standard deviation of the PSF in each direction (in physical units)
+The PSF is then assumed then to be a 3D Gaussian built from these parameters.
+The PSF can be obtained from PSF simulating software(e.g. Huygens/Icy) or from analysis of experimental data (e.g. with Huygens/Mosaic)
 
 3 - The noise to imitate, either
 
@@ -106,14 +107,19 @@ Code is distributed under GPL3.0 Licence (see LICENCE.md)
 This code includes the librairies :
 - tiffread Copyright (C) 1999-2010 Francois Nedelec
 - gausss3filter Copyright (C) Max W.K. Law
-- Octave code (Copyright (C) 2006-2015 John W. Eaton), under GPL licence
+- Octave gamrnd (Copyright (C) 2006-2015 John W. Eaton), under GPL licence
+- Octave postpad (Copyright (C) 1994-2009 John W. Eaton), under GPL licence
 - saveastiff, (Copyright (c) 2012, YoonOh Tak)
 - readtext, (Copyright (c) 2007,Peder Axensten) 
+- Octave fftconvn (Copyright (C) 2015 Carnë Draug <carandraug@octave.org> )
+
 
 Code modified from GNU Octave : 
 - randg
 - gamrnd
-see tiffread.m ; gamma_random.m ; readtext.m ; saveastiff.m for licencing information.
+- postpad
+- fftconvn
+see tiffread.m ; gamma_random.m ; readtext.m ; saveastiff.m ; postpad.m ; fftconvn.m for licencing information.
 
 This code was developped by Serge Dmitrieff in 2016 in EMBL, with the support of François Nédélec.
 http://biophysics.fr
@@ -122,7 +128,8 @@ http://biophysics.fr
 -June 2016 : initial minimal version
 -July 2016 : correction of stacking
 -July 2016 : major overhaul for easier use, and usage of sample image
--May 2017 : implemented the use of fluorophore coordinates
+-May 2017 : implemented the use of fluorophore coordinates 
+-May 2017 : implemented general PSF support
 
 # Source for gauss3filter 
 Max W. K. Law and Albert C. S. Chung, "Efficient Implementation for Spherical Flux Computation and Its Application to Vascular Segmentation",
