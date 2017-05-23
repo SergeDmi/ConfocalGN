@@ -33,24 +33,23 @@ The ground truth image can be a high resolution image. By default the ground tru
 should be isotropic, but non-isotropic images are possible provided CONF.pix and CONF.psf are 
 scaled accordingly. 
 
-2 - A parameter structure CONF, containing:
--- `CONF.pix` : confocall voxel size (in physical units), a 3x1 vector
--- `CONF.psf` : microscope 2-way point spread function
+2 - A parameter structure CONF, containing : `CONF.pix`, the confocal voxel size (in physical units), a 3x1 vector
+and `CONF.psf`, microscope 2-way point spread function. 
 `conf.psf` can be 
 - an image (matlab matrix or tiff file), with the same pixel size as the ground truth image
 - a 3x1 vector; containing the standard deviation of the PSF in each direction (in physical units)
 The PSF is then assumed then to be a 3D Gaussian built from these parameters.
 The PSF can be obtained from PSF simulating software(e.g. Huygens/Icy) or from analysis of experimental data (e.g. with Huygens/Mosaic)
 
-3 - The noise to imitate, either
+3 - The noise to imitate, in `sample`
 
-3A - A noise distribution NOISE and a signal value SIG    -- or 
+3A - A noise distribution `sample.noise` and a signal value `sample.sig`    -- or 
 
-3B - A sample image (array or image name) SAMPLE for the program to derive NOISE and SIG
-    ConfocalGN segments the image (using a default or user-provided segmentation function)
-    The pixels above the threshold are considered as signal, the others as background
-NOISE is a 3x1 vector of the 3 first moments of the background pixel values
-SIG is the mean of the signal pixel values
+3B - A sample image (array or image name) `sample.img` for the program to derive `sample.noise` and `sample.sig`
+    ConfocalGN segments the image (using a default or user-provided segmentation function).
+    The pixels above the threshold are considered as signal, the others as background.
+`sample.noise` is a 3x1 vector of the 3 first moments of the background pixel values.
+`sample.sig` is the mean of the signal pixel values.
 
 
 Optionally, the user can also specify:
