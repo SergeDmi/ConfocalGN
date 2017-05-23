@@ -25,7 +25,7 @@ conf.pix=[200 200 800];
 % Property of the microscope PSF
 % Standard deviation of the PSF in the 3 dimensions provided in units of ground truth pixel size
 %conf.psf=[250 250 500];
-conf.psf='ex_psf.tiff';
+conf.psf='gauss_psf.tiff';
 
 %% Here we present two ways of using ConfocalGN
 if 1
