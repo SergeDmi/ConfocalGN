@@ -1,3 +1,4 @@
+function y = postpad (x, l, c, dim)
 % Copyright (C) 1994, 1995, 1996, 1997, 1998, 2000, 2002, 2004, 2005,
 %               2006, 2007, 2008, 2009 John W. Eaton
 %
@@ -25,8 +26,6 @@
 
 % Author: Tony Richardson <arichard@stark.cc.oh.us>
 % Created: June 1994
-
-function y = postpad (x, l, c, dim)
 
 if nargin < 2 || nargin > 4
   %print_usage ();
