@@ -61,7 +61,7 @@ that can be replaced with another equivalent segmentation method
     The replacing function must be of the format [ img,mask] = segment_image(image,options)
     see segment_image for the definitions of img,mask,image,options
 - Custom convolution program by indicating it in "convolve_with_psf.m"
-By default, convolve_with_psf uses convolve_with_gaussian_psf
+By default, convolve_with_psf uses either convolve_with_gaussian_psf or fftconvn
 
 # Operating ConfocalGN
 
@@ -69,25 +69,21 @@ To operate ConfocalGN, open MATLAB and switch to the ConfocalGN directory.
 - run cgn_startup.m (this will update the MATLAB path)
 An illustrative example is provided in cgn_example.m
 
-Use make_ground_truth to generate the ground truth image IMG if you start with fluorophores coordinates (option 1A)
+- Fill up the required input
+`conf` must contain `conf.pix` and `conf.psf`. `truth` must contain a ground truth image (`truth.img`) or fluorophore coordinates (`truth.source`).
+`sample` must contain either noise and signal (`sample.noise` and `sample.sig`), or a sample image (`sample.img`).
 
-Use the appropriate program to simulate confocal imaging, depending if you use option 3A or 3B:
+- Use `confocal_generator` 
 
-- `stack_generator` to use the parameters 3A
+[res,truth,sample]=confocal_generator(truth,conf,sample);
 
-[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(IMG,conf,NOISE,SIG);
+With the output :
 
-- `confocal_generator` to use the parameters 3B
-
-[stacks,offset,acheived_sig,achieved_noise,im]=confocal_generator(IMG,conf,SAMPLE);
-
-The output is the same in both case:
-
-- `stacks` : simulated image stack
-- `offset` : translation needed to align with IMG
-- `acheived_sig` : mean signal value in the simulated image
-- `achieved_noise` : noise distribution in the simulated image
-- `im` : post-segmentation image of stack
+- `res.stacks` : simulated image stack
+- `res.offset` : translation needed to align with IMG
+- `res.sig` : mean signal value in the simulated image
+- `res.noise` : noise distribution in the simulated image
+- `res.img` : post-segmentation image of stack
 
 
 # Example :
