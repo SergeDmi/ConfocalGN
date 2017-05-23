@@ -22,18 +22,18 @@ fluorophore stochasticity and background fluorescence.
 
 To use the confocal generator, the user must provide :
 
-1 - A ground truth, either
+1 - A ground truth `truth`, either
 
-1A - The ground truth is a set of fluorophore positions (as a matlab matrix or saved in a text file). 
+1A - `truth.source` : a set of fluorophore positions (as a matlab matrix or saved in a text file). 
 This is then converted into a high resolution image (a 3D matrix). 
 This conversion may include fluorophore stochasticity and background fluorescence.
 
-1B - An image IMG (a 3D matrix or a TIFF file)
+1B - `truth.img` an image (a 3D matrix or a TIFF file)
 The ground truth image can be a high resolution image. By default the ground truth image
-should be isotropic, but non-isotropic images are possible provided conf.pix and conf.psf are 
+should be isotropic, but non-isotropic images are possible provided `conf.pix` and `conf.psf` are 
 scaled accordingly. 
 
-2 - A parameter structure conf, containing : `conf.pix`, the confocal voxel size (in physical units), a 3x1 vector
+2 - A parameter structure `conf`, containing : `conf.pix`, the confocal voxel size (in physical units), a 3x1 vector
 and `conf.psf`, microscope 2-way point spread function. 
 `conf.psf` can be 
 - an image (matlab matrix or tiff file), with the same pixel size as the ground truth image
@@ -51,9 +51,11 @@ The PSF can be obtained from PSF simulating software(e.g. Huygens/Icy) or from a
 `sample.noise` is a 3x1 vector of the 3 first moments of the background pixel values.
 `sample.sig` is the mean of the signal pixel values.
 
+# Options
 
 Optionally, the user can also specify:
 - Sampling and segmentation options by editing the file cgn_options.m
+- Options to generate the ground truth image by editing gtm_options.m
 - Custom segmentation program by indicating it in "provide_image_mask.m"
 By default, provide_image_mask uses the function segment_image, 
 that can be replaced with another equivalent segmentation method
