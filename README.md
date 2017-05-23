@@ -30,11 +30,11 @@ This conversion may include fluorophore stochasticity and background fluorescenc
 
 1B - An image IMG (a 3D matrix or a TIFF file)
 The ground truth image can be a high resolution image. By default the ground truth image
-should be isotropic, but non-isotropic images are possible provided CONF.pix and CONF.psf are 
+should be isotropic, but non-isotropic images are possible provided conf.pix and conf.psf are 
 scaled accordingly. 
 
-2 - A parameter structure CONF, containing : `CONF.pix`, the confocal voxel size (in physical units), a 3x1 vector
-and `CONF.psf`, microscope 2-way point spread function. 
+2 - A parameter structure conf, containing : `conf.pix`, the confocal voxel size (in physical units), a 3x1 vector
+and `conf.psf`, microscope 2-way point spread function. 
 `conf.psf` can be 
 - an image (matlab matrix or tiff file), with the same pixel size as the ground truth image
 - a 3x1 vector; containing the standard deviation of the PSF in each direction (in physical units)
@@ -75,11 +75,11 @@ Use the appropriate program to simulate confocal imaging, depending if you use o
 
 - `stack_generator` to use the parameters 3A
 
-[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(IMG,CONF,NOISE,SIG);
+[stacks,offset,achieved_sig,achieved_noise,im]=stack_generator(IMG,conf,NOISE,SIG);
 
 - `confocal_generator` to use the parameters 3B
 
-[stacks,offset,acheived_sig,achieved_noise,im]=confocal_generator(IMG,CONF,SAMPLE);
+[stacks,offset,acheived_sig,achieved_noise,im]=confocal_generator(IMG,conf,SAMPLE);
 
 The output is the same in both case:
 
