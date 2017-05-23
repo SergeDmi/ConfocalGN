@@ -31,14 +31,16 @@ else
      end
 end
 
-
+offset=[0 0 0];
 if strcmp(mode,'gaussian')
-    cvd=convolve_with_gaussian_psf(img,psf);
-    offset=[0 0 0];
+    cvd=convolve_with_gaussian_psf(img,psf);    
 else
     cvd=fftconvn(img,psf,mode);
-    offset=-size(psf)/2;
-    cvd(:)=cvd(:)+min(cvd(:));
+    sc=size(cvd);
+    si=size(img);
+    ds=sc-is;
+    of=floor(ds/2);
+    cvd=cvd(of(1):(of(1)+si(1)),of(2):(of(2)+si(2)),of(3):(of(3)+si(3)));
 end
 
 end

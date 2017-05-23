@@ -18,10 +18,14 @@ function [ res,truth,sample_prop] = confocal_generator(truth,conf,sample,options
 % * conf.pix is the voxel size of the microscope, i.e. how many pixels of the
 %   original image fit in one microscope voxel         (1x3 vector)
 %
-% * sample is a sample image to find background noise and mean signal value
+% * sample contains the information on the image to emulate
+%       
+%       sample.image : sample image to find background noise and mean signal value
 %       from this, a gamma or gaussian noise function is fitted
+%       sample.sig : mean value of signal voxels
+%       sample.noise : moments of the background voxel values
 %
-% * filt is a filtering option of image segmentation
+% * options are the options to be used by confocalGN
 %
 % OUTPUT
 % * stack is the simulated confocal stack
@@ -61,10 +65,34 @@ end
 if ~isfield(options,'verbose')
     options.verbose=defopt.verbose;
 end
-% Finding parameters from the image
-[sig,noise]=get_img_params(sample,sample_options);
+
+if isfield(sample,'sig') && isfield(sample,'noise')
+    noise=sample.noise;
+    sig=sample.sig;
+    if isfield(sample,'img')
+        sample_prop.img=sample.img;
+    end
+else
+    if isnumeric(sample)
+        % Sample is an image
+        sample_prop.img=sample;
+        [sig,noise]=get_img_params(sample,sample_options);
+    elseif ischar(sample)
+        % Sample is the path to an image
+        sample_prop.img=sample;
+        [sig,noise]=get_img_params(sample,sample_options);
+    elseif isfield(sample,'img') 
+        % Sample.img is an image
+        sample_prop.img=sample.img;
+        [sig,noise]=get_img_params(sample.img,sample_options);
+    else
+        error('You must provide a valid sample for noise and signal');
+    end
+end
+
 sample_prop.sig=sig;
 sample_prop.noise=noise;
+        
 % Confocal generator
 [res,truth]=stack_generator(truth,conf,sig,noise,options);
 
