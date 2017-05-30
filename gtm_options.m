@@ -9,20 +9,21 @@ function opt = gtm_options
 %% Options for the output image
 % Specify image_size or pixel sizes
 opt.image_size            =  [512 512 162];
-opt.pix_size               = []; 
+opt.pix_size              = [];
 opt.offset                =  [];
 opt.rotation              =  [0 0 0];
-opt.overscale                =  1.5;
-opt.pts_scale                = 1000;
+opt.overscale             =  1.5;
+opt.pts_scale             = 1000;
+
 %% Options for the signal
-opt.signal                  = 100 ;
-opt.fluorophore                  = 'poisson';
-%opt.fluorophore                  = 'permanent';
+opt.signal                = 100 ;
+opt.fluorophore           = 'poisson';
+%opt.fluorophore          = 'permanent';
 
 %% Options for the background
 % moments of the background fluorescence distribution
-opt.background                  = [0] ;
-%opt.background            = [10 1 1] ;
+opt.background            = [0] ;
+%opt.background           = [10 1 1] ;
 
 %% Misc
 % moments of the background fluorescence distribution
