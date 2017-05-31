@@ -3,7 +3,11 @@ function [mask] = provide_image_mask(image,options)
 %   Replace by the appropriate image segmentation function
 
 %% Here image segmention function
-[~,mask]=segment_image(image,options);
+if nargin>1
+    [~,mask]=segment_image(image,options);
+else
+    [~,mask]=segment_image(image);
+end
 
 end
 
