@@ -24,7 +24,7 @@ truth.points=points;
 truth.pix=pix;
 
 if nargin > 1
-    saveastiff(img,outfile);
+    tiff_saver_16(img,outfile);
 end
 
 end
