@@ -5,8 +5,8 @@
 
 
 %% Example options
-save=1;
-display=1;
+do_save=1;
+do_display=1;
 do_plot=1;
 
 %% Ground truth
@@ -63,13 +63,13 @@ end
 stacks=res.stack;
 
 %% Save simulated image
-if save
+if do_save
     output='simulated_stack.tiff';
-    saveastiff(stacks,output);
+    tiff_saver_16(stacks,output);
 end
 
 %% Display simulated image:
-if display
+if do_display
     for i = 1:size(stacks, 3)
         show(stacks(:,:,i));
     end
