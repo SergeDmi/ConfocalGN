@@ -26,8 +26,9 @@ function rnd = gamma_random(a, b, n)
 % software in the in the public domain.  
 %
 %
-% simplified for matlab in 2016 by Serge Dmitrieff
+% Simplified for matlab in 2016 by Serge Dmitrieff
 % www.biophysics.fr
+
 if (nargin > 1)
     if (~isscalar(a) || ~isscalar(b)) 
         error ('gamrnd: a and b must be of common  scalar');

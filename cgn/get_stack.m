@@ -29,7 +29,7 @@ if n>1
         s(3)=n;
         stack=zeros(s);
         for i=1:n
-            if length(imgs(i).data>1)
+            if length(imgs(i).data)>1
                 error('Unsupported tiff format : stack of stacks')
             end
             stack(:,:,i)=imgs(i).data;

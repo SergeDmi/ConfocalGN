@@ -6,16 +6,20 @@ function opt = cgn_options_default
 %
 %
 
-% Options for image segmentation
+
+%% Options for image segmentation
+% Filter to be used before thresholding
 opt.segmentation.filt             = [1 1 0];
+% Indexes of items to be kept when loading the stack
 opt.segmentation.ix               = [];
 
-% Options for sample segmentation
-opt.sampling.filt                   = [1 1 0];
-opt.sampling.ix                     = 9:16;
+%% Options for sample segmentation
+% Filter to be used before thresholding
+opt.sampling.filt                 = [1 1 0];
+% Indexes of items to be kept when loading the stack
+opt.sampling.ix                   = 9:16;
 
-% Misc
-opt.verbose                       = 0;
-opt.truth_fname                   = 'ground_truth.tiff';
+%% Misc
+opt.verbose                       = 1;
 
 return

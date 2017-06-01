@@ -2,7 +2,7 @@ function [ px_distr ] = pixel_distribution(list_moments,NP,mode)
 %Generating pixel distributions
 %   list_moments is the moments of the pixels distribution
 %   NP is the size of the array to be generated
-%   mode is the type of distribution
+%   mode is the type of distribution (gamma, poisson or poisson)
 if nargin<3
     mode='';
     if nargin<2

@@ -33,14 +33,14 @@ if 1
     sample='sample_image.tiff';
     %% Generating the stack from the image
     % Includes pixel noise
-    [res,truth,sample_prop]=confocal_generator(truth,conf,sample);
+    [res,truth,sample]=confocal_generator(truth,conf,sample);
 else
     % Using noise and signal values
     % pixel noise from camera
-    noise=[556 1.0371e+04 1.0926e+06]';
+    salmple.noise=[556 1.0371e+04 1.0926e+06]';
     % Estimated mean pix value in signal
-    mean_sig=1.0022e+03;
-    [res,truth,sample_prop]=stack_generator(truth,conf,noise,mean_sig);
+    sample.sig=1.0022e+03;
+    [res,truth,sample]=confocal_generator(truth,conf,sample);
 end
 %% Output : 
 % res is the result containing : 

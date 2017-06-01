@@ -61,6 +61,8 @@
 
 function result=gauss3filter(image, sigma, pixelspacing)
     si=size(image);
+    
+    % CGN addition Converting 2D image to 3D
     if length(si)==2
         si(3)=1;
     end
@@ -127,7 +129,6 @@ end
 function varargout=ifftshiftedcoormatrix3(dimension)
 dim=length(dimension);
 p = floor(dimension/2);
-
     for i=1:3
         a=single([p(i)+1:dimension(i) 1:p(i)])-p(i)-1;
         reshapepara=ones(1,dim, 'single');

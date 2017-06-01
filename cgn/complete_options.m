@@ -1,5 +1,5 @@
 function [ opt ] = complete_options(opt,defopt,ofields)
-%COMPLETE OPTIONS copletes missing fields in an option structure
+%COMPLETE OPTIONS completes missing fields in an option structure
 %   By comparing it to the default options
 
 if nargin<2

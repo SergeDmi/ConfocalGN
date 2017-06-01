@@ -48,6 +48,7 @@ function [ res,truth,sample_prop] = confocal_generator(truth,conf,sample,options
 % Serge Dmitrieff, Nédélec Lab, EMBL 2016
 % www.biophysics.fr
 
+%% Options loading
 if nargin<3
     error('You must provide a ground truth, confocal properties, and a sample image, ');
 end
@@ -66,6 +67,9 @@ if ~isfield(options,'verbose')
     options.verbose=defopt.verbose;
 end
 
+%% Checking the input
+% Checking if the sample is an image or the signal/background moments
+% If an image, extracting the signal and background moments
 if isfield(sample,'sig') && isfield(sample,'noise')
     noise=sample.noise;
     sig=sample.sig;
@@ -89,11 +93,10 @@ else
         error('You must provide a valid sample for noise and signal');
     end
 end
-
 sample_prop.sig=sig;
 sample_prop.noise=noise;
         
-% Confocal generator
+%% The confocal generator itself
 [res,truth]=stack_generator(truth,conf,sig,noise,options);
 
 end

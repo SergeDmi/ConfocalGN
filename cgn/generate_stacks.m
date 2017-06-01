@@ -1,4 +1,4 @@
-function [ stack,offset] = generate_stacks( truth,conf,sig,noise,options,tolerance)
+function [ stack,offset] = generate_stacks( truth,conf,sig,noise,options)
 % generate_stacks : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
