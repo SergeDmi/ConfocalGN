@@ -4,7 +4,8 @@ function [ img,sig_mask,bg_mask] = segment_image(image,options)
 %   Should be replaced by your own !
 %
 %   img is the thresholded image
-%   mask is the mask to apply to the image to obtain the background
+%   sig_mask is the mask to apply to the image to obtain the signal voxels
+%   bg_mask is the mask to apply to the image to obtain the background voxels
 %
 % options or options.segmentation should contain filt
 % filt is a 3x1 vector for the Gaussian blurring to be applied
@@ -27,18 +28,11 @@ ix=options.ix;
 
 if ischar(image)
     if ~isempty(ix)
-        imgs=tiffread(image,ix);
+        stack=get_stack(tiffread(image,ix));
     else
-        imgs=tiffread(image);
+        stack=get_stack(tiffread(image));
     end
-    n=length(imgs);
-    s=size(imgs(1).data);
-    s(3)=n;
-
-    stack=zeros(s);
-    for i=1:n
-        stack(:,:,i)=imgs(i).data;
-    end
+   
 else
     if ~isempty(image)
         stack=image;
