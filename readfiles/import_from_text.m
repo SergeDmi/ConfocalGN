@@ -1,10 +1,18 @@
 function [ points ] = import_from_text( input,options)
-%IMPORT_FROM_TEXT load points from a text file
-%   We are gonna assume the text file to be nice enough
+%IMPORT_FROM_TEXT loads points from a text file
+%   Assumes the text file to be nice enough
 %   It is quite versatile but slow ! 
 %   Better use custom code for your filetype 
-%   Can read from txt files or obj files
+%   Can read from .txt files or .obj files
 %   
+%
+% Reads coordinates from file, keeping only EITHER
+% - non-commented lines (comments specified in options.comments)
+%   OR
+% - lines with a keyword indicator (if comments.indics is not empty)
+%
+% Keeps only certain columns, specified by options.range
+%
 % Serge Dmitrieff, May 2017
 % http://biophysics.fr
 
