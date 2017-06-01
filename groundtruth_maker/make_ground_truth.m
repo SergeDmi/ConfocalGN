@@ -18,13 +18,17 @@ else
     [img,points,pix]=make_img_from_points(source,options);
 end
 
+%% Checking output format
 truth.source=source;
 truth.img=img;
 truth.points=points;
 truth.pix=pix;
 
+%% Exporting to a tiff image
 if nargin > 1
-    tiff_saver_16(img,outfile);
+    if ~isempty(outfile) 
+        tiff_saver_16(img,outfile);
+    end
 end
 
 end

@@ -31,6 +31,8 @@ sig=pixel_distribution(fluo,NS,mode);
 % We count the fluorophores per high-res voxel and add the fluorescence to
 % the image
 [A,~,toA]=unique(round(RR),'rows');
+% A is the the list of pixels containing signal
+% toA is the the list of points contributing to a pixel
 nA=size(A,1);
 sigA=zeros(1,nA);
 
@@ -44,6 +46,7 @@ else
        sigA(toA(i))=sigA(toA(i))+sig(i);
     end
 end
+% Populating the image
 img(A(:,1)+(A(:,2)-1)*Sizes(1)+(A(:,3)-1)*Sizes(1)*Sizes(2))=sigA(:);
 
 %% Adding the background

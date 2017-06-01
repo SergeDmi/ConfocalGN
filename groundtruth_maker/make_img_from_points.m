@@ -1,5 +1,8 @@
 function [img,points,pixsizes]=make_img_from_points(input,options)
 % Generates an image from a list of points
+%   Uses options or gtm_options 
+%   input should be the points to convert to an image
+%   Prepares points and image scale for generate_image
 
 %% Reading options
 defopt=gtm_options_default;
@@ -12,6 +15,7 @@ else
     options=complete_options(options,defopt);
 end
 
+%% Preparing variable
 fluo=options.signal;
 bkgd=options.background;
 mode=options.fluorophore;
@@ -31,7 +35,6 @@ end
 if isempty(points)
     error('Error : empty points, please provide points to make ground thruth')
 end
-
 s=size(points);
 
 %% Checking points dimensions
@@ -46,15 +49,16 @@ if s(2)<3
     points=pp;
 end
 
-
 if isempty(sizes) && isempty(pixsize)
     error('You must provide an image size or pixel size')
 end
 
+%% Scaling points coordinates if specified in options
 if ~isempty(pts_scale)
     points=points.*pts_scale;
 end
 
+%% Defining the scaling, i.e. physical size of a pixel
 if isempty(pixsize)
      % If no scaling, auto-scale to fit image size
     if options.verbose
@@ -69,7 +73,6 @@ if isempty(pixsize)
     scaling=(max(scales)*overscale);
     pixsizes=scaling;
 end
-
 points=points./pixsizes;
 
 %% Centering and scaling point to reach desired sizes
