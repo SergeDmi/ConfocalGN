@@ -4,7 +4,7 @@ function [t] = otsu_threshold(Image)
 %(2)pixels within each group are very similar to each other 
 %   Parameters:
 %   t : threshold 
-%   r : pixel value ranging from 1 to 255
+%   p : pixel value ranging from 1 to 255
 %   q_L, q_H : the number of lower and higher group respectively
 %   sigma : group variance
 %   miu : group mean
