@@ -1,10 +1,15 @@
 function [ Pts,W ] = convertpoints( img , pixsizes,offset)
-% Convert a 1D/2D/3D stack into an array of points coordinates Pts with
-% weights W
+% Convert a 1D/2D/3D stack into an array of points and weights
+%   img : stack
 %   Pixsizes corresponds to the pixel size along each dimension
 %   Offset is the an offset 
 %  
+%   Pts: coordinates
+%   W : weights
+%
 % Serge Dmitrieff, EMBL, 2015
+
+%% Preparing offset and pixel sizes
 if nargin<3
     offset=[0 0 0];
     if nargin<2
@@ -14,6 +19,7 @@ end
 s=size(img);
 l=length(pixsizes);
 
+%% Preparing offset and pixel sizes
 if length(s)==l && length(s)<4
    	ixes=logical(~isnan(img(:)).*(img(:)>0))';
 	if l==1
