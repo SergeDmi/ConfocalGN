@@ -18,6 +18,9 @@ opt.sampling.filt                 = [1 1 0];
 % Indexes of items to be kept when loading the stack
 opt.sampling.ix                   = 9:16;
 
+%% Output image option
+opt.format                    = 'single';
+
 %% Misc
 opt.verbose                       = 1;
 

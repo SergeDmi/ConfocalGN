@@ -1,8 +1,7 @@
 % Example file,
 % to use ConfocalGN to simulate confocal imaging
-% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2016
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
 % http://biophysics.fr
-
 
 %% Example options
 do_save=1;
@@ -11,35 +10,36 @@ do_plot=1;
 
 %% Ground truth
 % - Ground truth can be an image file or a stack, in high resolution
-% associated to the size of the high resolution voxel
-%truth.img='ground_truth.tiff';
-%truth.pix=[11.5 11.5 11.5];
+%       associated to the size of the high resolution voxel
+%      E.G.
+%              truth.img='ground_truth.tiff';
+%              truth.pix=[11.5 11.5 11.5];
 % - Or the ground truth can be fluorophore coordinates
 truth.source='ground_truth.txt';
 
-
 %% Parameters for ConfocalGN
-% pix : size of a simulated voxel
-% ground truth is high res compared to confocal
+% conf.pix : size of a simulated voxel in physical units (e.g. nanometer)
+% ground truth should be of high resolution
+% i.e; conf.pix(:) >> truth.pix(:)
 conf.pix=[200 200 800];
-% Property of the microscope PSF
-% Standard deviation of the PSF in the 3 dimensions provided in units of ground truth pixel size
-%conf.psf=[250 250 500];
-conf.psf='gauss_psf.tiff';
+% conf.psf : 2-way point spread funciton
+% Can be either :
+% - Standard deviation of the PSF in the 3 dimensions (in physical units)
+% - an image to be convolved with ground truth truth.img
+conf.psf=[250 250 500];
+%conf.psf='gauss_psf.tiff';
 
 %% Here we present two ways of using ConfocalGN
 if 1
     % Reading Noise and Signal parameters from image
     sample='sample_image.tiff';
     %% Generating the stack from the image
-    % Includes pixel noise
     [res,truth,sample]=confocal_generator(truth,conf,sample);
 else
-    % Using noise and signal values
-    % pixel noise from camera
+    % Using user-defined noise and signal values
     salmple.noise=[556 1.0371e+04 1.0926e+06]';
-    % Estimated mean pix value in signal
     sample.sig=1.0022e+03;
+    %% Generating the stack from the image
     [res,truth,sample]=confocal_generator(truth,conf,sample);
 end
 %% Output : 
@@ -65,7 +65,8 @@ stacks=res.stack;
 %% Save simulated image
 if do_save
     output='simulated_stack.tiff';
-    tiff_saver_16(stacks,output);
+    opt.format='single';
+    tiff_saver(stacks,output,opt);
 end
 
 %% Display simulated image:
