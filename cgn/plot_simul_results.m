@@ -1,6 +1,7 @@
 function [  ] = plot_simul_results(truth,res,conf,options)
-% plot results of simulated stacks
+% Plots results of simulated stacks
 %   compares ground truth to simulated
+%   see confocal_generator for definitions of truth, res, conf
 
 defopt=cgn_options_load();
 if nargin<5
