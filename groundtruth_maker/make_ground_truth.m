@@ -27,7 +27,7 @@ truth.pix=pix;
 %% Exporting to a tiff image
 if nargin > 1
     if ~isempty(outfile) 
-        tiff_saver_16(img,outfile);
+        tiff_saver(img,outfile);
     end
 end
 

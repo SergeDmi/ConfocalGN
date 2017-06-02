@@ -1,4 +1,4 @@
-function [img]=generate_image(Sizes,RR,fluo,bkgd,mode)
+function [img]=generate_image(Sizes,RR,fluo,bkgd,mode,datatype)
 % Makes a 3D image from a set of points RR
 %  The image has size Sizes(1) x Sizes(2) x Sizes(3)
 % The fluorescence has moments fluo
@@ -11,7 +11,9 @@ function [img]=generate_image(Sizes,RR,fluo,bkgd,mode)
 if nargin<5
     mode='';
 end
-        
+if mode<6
+    datatype='single';
+end     
 if length(bkgd)<3
     bkgd(3)=0;
 end
@@ -22,7 +24,7 @@ sN=size(Sizes);
 if sN(2)==1;
     Sizes=[Sizes(1) Sizes(1) Sizes(1)];
 end
-img=zeros(Sizes);
+img=zeros(Sizes,datatype);
 s=size(RR);
 NS=s(1);
 sig=pixel_distribution(fluo,NS,mode);

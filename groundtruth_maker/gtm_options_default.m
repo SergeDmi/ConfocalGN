@@ -20,6 +20,8 @@ opt.rotation              =  [0 0 0];
 opt.overscale             =  1.5;
 % Scaling between the fluorophore coordinates and physical units
 opt.pts_scale             = 1;
+% Format
+opt.format                = 'single';
 
 %% Options for the signal
 % Mean signal value
@@ -35,5 +37,6 @@ opt.background            = [0] ;
 
 %% Misc
 opt.verbose               = 1 ;
+opt.truth_fname           = '' ;
 
 return

@@ -1,57 +1,64 @@
 function [ res,truth] = stack_generator( truth,conf,sig,noise,options)
-% stac_generator : make mock confocal data from a ground truth
+% stack_generator : make mock confocal data from a ground truth
 %   Distributed under the terms of the GNU Public licence GPL3
 %
-% INPUT
-% * img is the orginal ground truth, with isotropic 1x1x1 pixels
-%   this image shall be convolved with the psf
-%   should already have background noise included if any
-%   is either a matrix or a tiff file
+%
+%% INPUT :
+% * truth is the orginal ground truth
+%   either 
+%       - truth.source : coordinates of fluorophores
+%       - truth.img & truth.pix : high resolution image and pixel size
+%   . If truth.source is provided, it will be converted to an image truth.img 
+%   using make_ground_truth.
+%   . truth.img can be either a matrix or the path to a tiff file
+%    truth.pix is the size of a pixel in physical units
+%   
+%   truth.img should be a high resolution image such as a confocal voxel
+%   encompasses a large number of ground truth pixels. It should already 
+%   have background noise included if any.
+%   This image will be convolved with the psf
 %
 % * conf.psf is the point spread function of the microscope 
 %       it is the 2-way psf (i.e. illumination+observation)
-%       also called confocal psf  ; here : 1x3 vector
-%   here we assume the psf to be gaussian which provides fast convolution
-%   the psf is in units of the size of original image pixel 
-%       ex : psf = [wx,wy,wz] where wi is the gaussian width on axis i
+%       also called confocal psf  
+%   It can be :
+%       - Either a 1x3 vector
+%   this assumes the psf to be gaussian (which provides fast convolution)
+%   the PSF is in units of the size of original image pixel 
+%   ex : psf = [wx,wy,wz] where wi is the gaussian spread on axis i
+%       - or an image to be convolved to the ground truth image
+%   In this case, make sure the grount truth image and the PSF image have
+%   pixels of the same physical size
 %
-% * conf.pix is the voxel size of the microscope, i.e. how many pixels of the
-%   original image fit in one microscope voxel         (1x3 vector)
+% * conf.pix is a (1x3 vector) containing the voxel size of the microscope
+%   in physical units
 %
-% * noise is (at least) the two first moments of the noise distribution
-%   If the distribution is skewed enough (large enough third moment)
-%   it is modeled by gamma function
-%   Otherwise, the noise is gaussian
 %
-% * sig is the moments of the signal distribution
-%       sig(1) is the aim for the signal mean pixel value
+%  sig   : mean value of signal voxels
+%  noise : moments of the background voxel values
 %
-% OUTPUT
-% * stack is the simulated confocal stack
+% * options are the options to be used by confocalGN
 %
-% * offset is the translation in x,y,z to go back to the original coord
-%   as the shape gets
+%% OUTPUT :
 %
-% RATIONALE
-% We convolve the ground truth with the confocal psf. The psf should be the
-% one measured experimentally from control sample (e.g. bead). So it is
-% really how a point *object* would be seen.
+% res is the result containing : 
+%   res.stack : the simulated stack
+%   res.sig : mean value of simulated signal voxels
+%   res.noise : moments of the simulated background voxels values
+%   res.img : the image obtained from segmenting res.stack
+%   res.offset : spatial offset between the stack and the ground truth
+% truth is the structure containing
+%   truth.points : fluorophore coordinates of the ground truth
+%   truth.img : ground truth image
+%   truth.pix : size of a ground truth pixel in physical units
 %
-% In many cases, the confocal psf is close to gaussian. Please make sure it
-% is the case for your setup, or that the exact shape of the PSF is not
-% relevant to your issue.
-%
-% This program is intended solely for analysis testing purpose.
-% This IS not a rigorous implementation of confocal optics and electronics.
-%
-% Serge Dmitrieff, N??d??lec Lab, EMBL 2016
+% Serge Dmitrieff, Nédélec Lab, EMBL 2016
 % www.biophysics.fr
 
+%% Input verification
 if nargin<2
     error('You must provide an image and confocal imaging properties');
 end
-
-
 
 if nargin>2
    if sig(1)<0
@@ -62,7 +69,6 @@ if nargin>2
 else 
     error('No signal level specified');
 end
-
 
 if nargin<4
     noise=[0 0 0];
@@ -77,6 +83,7 @@ else
     end
 end
 
+%% Options verification
 defopt=cgn_options_default;
 if nargin<5
     options=cgn_options_load();
@@ -84,7 +91,7 @@ else
     options=complete_options(options,defopt);
 end
 seg_options=options.segmentation;
-outfile=options.truth_fname;
+
 
 %% Loading image
 make_truth=0;
@@ -96,27 +103,30 @@ end
 
 if make_truth
     if isfield(truth,'options')
+        outfile=truth.options.truth_fname;
         truth_options=truth.options;
         truth=make_ground_truth(truth,outfile,truth_options);
     else
+        outfile='';
         truth=make_ground_truth(truth,outfile);
     end
 end
 
-        
-
-
+%% Generating stacks        
 [ stack,offset] = generate_stacks( truth,conf,sig,noise,seg_options);
-[SIG,NOISE,img]=get_img_params(stack,seg_options);
 
+%% Formating output
+[SIG,NOISE,img]=get_img_params(stack,seg_options);
 res.stack=stack;
 res.offset=offset;
 res.sig=SIG;
 res.noise=NOISE;
 res.img=img;
-% we compare the 'target' signal and noise (sig,noise) to the signal and
-% noise obtained by the simulator
+
+%% Detailed output
 if options.verbose>0
+    % we compare the 'target' signal and noise (sig,noise) to the signal and
+    % noise obtained by the simulator
     disp(['Target mean_pix : ' num2str(sig') '  -  target noise : ' num2str(noise')])
     disp(['        Target SNR : ' num2str(sig(1)/noise(1))])
     disp(['Achieved mean_pix : ' num2str(SIG') '  -  achieved noise : ' num2str(NOISE')])

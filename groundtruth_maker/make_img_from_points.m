@@ -24,6 +24,7 @@ offset=options.offset;
 pixsize=options.pix_size;
 overscale=options.overscale;
 pts_scale=options.pts_scale;
+datatype=options.format;
 
 %% Loading the points
 if ischar(input)
@@ -102,6 +103,6 @@ if nw>0
 end
 
 %% Generating an image from these points
-img=generate_image(sizes,points,fluo,bkgd,mode);
+img=generate_image(sizes,points,fluo,bkgd,mode,datatype);
 
 end
