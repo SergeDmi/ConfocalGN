@@ -1,7 +1,10 @@
 % Example file,
-% to use ConfocalGN to simulate confocal imaging
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
 % Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
-% http://biophysics.fr
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 %% Example options
 do_save=1;

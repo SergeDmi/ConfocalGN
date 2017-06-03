@@ -4,7 +4,12 @@ function opt = gtm_options_default
 % They are loaded by gtm_option_load.m,
 % which also check for a local 'gtm_options.m'
 %
-%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 %% Options for the output image
 % Specify image_size or pixel sizes

@@ -1,5 +1,4 @@
 function [ hImage, pixels ] = show_image( im, varargin )
-
 % function [ hImage, pixels ] = show_image ( im, ... )
 %
 % Display picture "im" in 16-bit gray levels.

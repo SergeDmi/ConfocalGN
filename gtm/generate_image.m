@@ -4,7 +4,14 @@ function [img]=generate_image(Sizes,RR,fluo,bkgd,mode,datatype)
 % The fluorescence has moments fluo
 % Background fluorescence has moments bkgd
 % mode is the mode of fluorophore stochasticity (poisson, gamma, or constant)
-% S. Dmitrieff 2016
+% datatype defines the image saving precision (by default, singles)
+%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 
 %% Default parameters

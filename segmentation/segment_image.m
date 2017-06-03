@@ -10,8 +10,12 @@ function [ img,sig_mask,bg_mask] = segment_image(image,options)
 % options or options.segmentation should contain filt
 % filt is a 3x1 vector for the Gaussian blurring to be applied
 %
-% Serge Dmitrieff, Nédélec Lab, EMBL 2016
-% www.biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 defopt=cgn_options_load();
 if nargin<2

@@ -1,5 +1,4 @@
 function stack = tiffread(file_name, indices, varargin)
-
 % tiffread, version 3.31 - September 20, 2014
 %
 % stack = tiffread;

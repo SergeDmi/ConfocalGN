@@ -13,8 +13,12 @@ function [ points ] = import_from_text( input,options)
 %
 % Keeps only certain columns, specified by options.range
 %
-% Serge Dmitrieff, May 2017
-% http://biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 
 %% Loading options
@@ -76,7 +80,6 @@ end
 for i=1:nl
     line=all_lines{i};
     if ~isempty(line)
-        pts=[];
         verify=mode;
         % Trying matlab conversion
         pts=str2num(line);

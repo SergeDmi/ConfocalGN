@@ -1,5 +1,10 @@
 function [ M ] = rotmat_3D( angles )
 % Creates a rotation matrix from Euler angles
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 a=angles(1);
 b=angles(2);

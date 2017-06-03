@@ -3,6 +3,12 @@ function [img,points,pixsizes]=make_img_from_points(input,options)
 %   Uses options or gtm_options 
 %   input should be the points to convert to an image
 %   Prepares points and image scale for generate_image
+%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 %% Reading options
 defopt=gtm_options_default;

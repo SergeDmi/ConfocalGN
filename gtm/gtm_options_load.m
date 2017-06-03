@@ -3,6 +3,12 @@ function opt = gtm_options_load(verbose)
 % or load default options
 %
 % F. Nedelec, 20 Nov. 2012
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 if nargin < 1
     verbose = [];

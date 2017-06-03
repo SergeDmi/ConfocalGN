@@ -7,7 +7,12 @@ function [ Pts,W ] = convertpoints( img , pixsizes,offset)
 %   Pts: coordinates
 %   W : weights
 %
-% Serge Dmitrieff, EMBL, 2015
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 %% Preparing offset and pixel sizes
 if nargin<3

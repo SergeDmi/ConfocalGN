@@ -1,8 +1,13 @@
 function range = image_auto_colors(im)
-
 % F. Nedelec, August 2010
 % automatically calculates color-range
 % match bottom/top ~1% of pixel values
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 
 if size(im,2) == 1

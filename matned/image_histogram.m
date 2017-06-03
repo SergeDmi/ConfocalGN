@@ -1,11 +1,15 @@
 function h = image_histogram( im, mask, plot_name )
-
 % h = image_histogram( im, mask )
 % h = image_histogram( im, mask, plot_name )
 %
 % calculate the histogram of the given image, optionally restricted on the mask
 % h(1) is the number of pixels of value 0, etc.
 % F. Nedelec, Dec. 2007
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 %%compatibility with tiffread:
 if ( isfield(im,'data') ) 

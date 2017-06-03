@@ -4,7 +4,12 @@ function opt = confocal_options
 % They are loaded by confocal_load_option.m,
 % which also check for a local 'confocal_options.m'
 %
-%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 %% Options for image segmentation
 % Filter to be used before thresholding

@@ -2,6 +2,12 @@ function pixels = image_get_pixels(im, indx)
 % Extract the pixel from the structs returned by tiffread.m
 %
 % F. Nedelec, Nov. 9 2012
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 pixels = im;
 

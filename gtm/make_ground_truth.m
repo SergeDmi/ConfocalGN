@@ -2,7 +2,12 @@ function [truth]=make_ground_truth(source,outfile,options)
 % Wrapper function to make a ground truth image from points
 %   We make this image from the points provided by input
 %
-% Serge Dmitrieff. Copyright EMBL 2017.
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 if nargin <1
     error('make_ground_truth requires at least one argument');

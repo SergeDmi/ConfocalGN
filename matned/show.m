@@ -1,5 +1,4 @@
 function hImage = show(im, varargin)
-
 % function hImage = show ( im, varargin )
 %
 % shows the image, allowing mouse control of brightness / contrast
@@ -9,6 +8,12 @@ function hImage = show(im, varargin)
 % This adds a pixel-info display to  show_image(im)
 %
 % F. Nedelec, nedelec@embl-heidelberg.de  last modified Nov 2012
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 [hImage, pixels] = show_image(im, varargin{:}, 'Name', inputname(1));
 
