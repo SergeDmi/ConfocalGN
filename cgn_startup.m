@@ -1,4 +1,4 @@
-%%--------------- Startup for confocal GN
+%%--------------- Startup for confocal GN 
 owd = pwd;
 addpath(owd)
 addpath([owd '/cgn/'])
