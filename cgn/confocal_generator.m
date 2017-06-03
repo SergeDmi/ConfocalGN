@@ -74,8 +74,11 @@ function [ res,truth,sample_prop] = confocal_generator(truth,conf,sample,options
 % This program is intended solely for analysis testing purpose.
 % This IS not a rigorous implementation of confocal optics and electronics.
 %
-% Serge Dmitrieff, Nédélec Lab, EMBL 2016
-% www.biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 %% Options loading
 if nargin<3

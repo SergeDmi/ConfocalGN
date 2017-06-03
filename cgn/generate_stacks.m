@@ -38,9 +38,12 @@ function [ stack,offset] = generate_stacks( truth,conf,sig,noise,options)
 % * offset is the translation in x,y,z to go back to the original
 % coordinates system
 %   
-%
-% Serge Dmitrieff, Nédélec Lab, EMBL 2016
-% www.biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 %% Verifying input
 if nargin<2

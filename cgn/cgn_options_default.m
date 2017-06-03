@@ -4,7 +4,11 @@ function opt = cgn_options_default
 % They are loaded by cgn_option_load.m,
 % which also check for a local 'cgn_options.m'
 %
-%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 
 %% Options for image segmentation

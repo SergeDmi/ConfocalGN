@@ -3,6 +3,13 @@ function [ px_distr ] = pixel_distribution(list_moments,NP,mode)
 %   list_moments is the moments of the pixels distribution
 %   NP is the size of the array to be generated
 %   mode is the type of distribution (gamma, poisson or poisson)
+%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 if nargin<3
     mode='';
     if nargin<2

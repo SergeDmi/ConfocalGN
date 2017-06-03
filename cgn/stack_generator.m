@@ -52,8 +52,11 @@ function [ res,truth] = stack_generator( truth,conf,sig,noise,options)
 %   truth.img : ground truth image
 %   truth.pix : size of a ground truth pixel in physical units
 %
-% Serge Dmitrieff, Nédélec Lab, EMBL 2016
-% www.biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 %% Input verification
 if nargin<2

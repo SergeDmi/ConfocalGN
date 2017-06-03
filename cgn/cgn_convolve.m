@@ -4,6 +4,11 @@ function [ cvd , offset] = cgn_convolve( img,psf,mode)
 %   Gaussian kernel uses a 3x1 vector PSF : mode = gaussian
 %   Otherwise, uses an image PSF          : mode = *
 %       See fftconvn for possible modes
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 if nargin<3
     mode='';

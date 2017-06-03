@@ -1,6 +1,11 @@
 function [ opt ] = complete_options(opt,defopt,ofields)
 %COMPLETE OPTIONS completes missing fields in an option structure
 %   By comparing it to the default options
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 if nargin<2
     error('Complete options : Not enough arguments')

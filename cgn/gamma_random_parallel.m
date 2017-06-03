@@ -23,11 +23,15 @@ function [ r ] = gamma_random_parallel( a , n )
 %   gamma variables", ACM Transactions on Mathematical Software 26(3) 363-372
 % Original version written by Paul Kienzle distributed as free software in the in the public domain. 
 %
-% Modified and simplified for Matlab. 
+%
+%% Modified for ConfocalGN
 % Implementation of Matlab parrallelization by Serge Dmitrieff, 2016
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+%
 % This is the fastest matlab gamma distribution generator I found x_x
 % Please let me know if you have better !
-% 
 % www.biophysics.fr
 
 if a<1

@@ -20,9 +20,12 @@ function [ sig,noise,img,stack,mask] = get_img_params(sample_image,options)
 %   by default, it relies on a simple image segmentation procedure
 %   please replace by your own procedure for optimal usage
 %   
-%
-% Serge Dmitrieff, Nélec Lab, EMBL 2016
-% www.biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 
 %% Input verification and processing
 % Checking options

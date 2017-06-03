@@ -2,6 +2,12 @@ function [  ] = plot_simul_results(truth,res,conf,options)
 % Plots results of simulated stacks
 %   compares ground truth to simulated
 %   see confocal_generator for definitions of truth, res, conf
+%
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
 
 defopt=cgn_options_load();
 if nargin<5

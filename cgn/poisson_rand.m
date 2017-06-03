@@ -1,8 +1,12 @@
 function [ Y ] = poisson_rand( l,N )
 % Simple poisson random number generator
 %   Implementing Knuth Algorithm
-% S. Dmitrieff, 2017
-% http://biophysics.fr
+%% Copyright
+% This file is part of ConfocalGN, a generator of confocal microscopy images
+% Serge Dmitrieff, Nédélec Lab, EMBL 2015-2017
+% https://github.com/SergeDmi/ConfocalGN
+% Licenced under GNU General Public Licence 3
+
 Y = zeros(N,1);
 X = rand(N,1);
 el=exp(-l);
