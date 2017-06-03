@@ -268,9 +268,10 @@ end
 tfile.close();
 if exist('path_parent', 'var'), cd(path_parent); end
 
-tElapsed = toc(tStart);
 if options.message
-    display(sprintf('The file was saved successfully. Elapsed time : %.3f s.', tElapsed));
+    tElapsed = toc(tStart);
+    display(sprintf('The file `%s` was saved successfully.', path));
+    %display(sprintf('The file was saved successfully. Elapsed time : %.3f s.', path, tElapsed));
 end
 
 catch exception

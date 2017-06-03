@@ -127,10 +127,14 @@ res.img=img;
 if options.verbose>0
     % we compare the 'target' signal and noise (sig,noise) to the signal and
     % noise obtained by the simulator
-    disp(['Target mean_pix : ' num2str(sig') '  -  target noise : ' num2str(noise')])
-    disp(['        Target SNR : ' num2str(sig(1)/noise(1))])
-    disp(['Achieved mean_pix : ' num2str(SIG') '  -  achieved noise : ' num2str(NOISE')])
-    disp(['        Achieved SNR : ' num2str(SIG(1)/NOISE(1))])
+    disp('Target:');
+    disp(['    signal       ', num2str(sig', 6)]);
+    disp(['    noise        ', num2str(noise', 6)]);
+    disp(['    signal/noise ', num2str(sig(1)/noise(1))])
+    disp('Achieved:');
+    disp(['    signal       ', num2str(SIG', 6)]);
+    disp(['    noise        ', num2str(NOISE', 6)]);
+    disp(['    signal/noise ', num2str(SIG(1)/NOISE(1))]);
 end
 
 end
