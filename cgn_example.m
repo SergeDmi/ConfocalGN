@@ -40,7 +40,7 @@ if 1
     [res,truth,sample]=confocal_generator(truth,conf,sample);
 else
     % Using user-defined noise and signal values
-    salmple.noise=[556 1.0371e+04 1.0926e+06]';
+    sample.noise=[556 1.0371e+04 1.0926e+06]';
     sample.sig=1.0022e+03;
     %% Generating the stack from the image
     [res,truth,sample]=confocal_generator(truth,conf,sample);
